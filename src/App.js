@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Showchat from './showchat';
-import Table from './table';
+import Showchat from './services/showchat';
+import Table from './services/table';
 import TestSend from "./services/TestSend";
 
 const App = () => {

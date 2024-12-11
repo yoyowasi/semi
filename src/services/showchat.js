@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 //import rawData from './ProcessedData.json'; // JSON 파일 경로 정확히 설정
-import ChartComponent from './chat.js';         ; // 차트 컴포넌트 파일명 확인
+import ChartComponent from '../chat.js';         ; // 차트 컴포넌트 파일명 확인
 
 const Showchat = () => {
     const [selectedField, setSelectedField] = useState('oxygenload'); // 필드 상태
