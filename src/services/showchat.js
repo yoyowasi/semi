@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
-//import rawData from './ProcessedData.json'; // JSON 파일 경로 정확히 설정
-import ChartComponent from '../chat.js';         ; // 차트 컴포넌트 파일명 확인
+import ChartComponent from '../chart.js'; // 차트 컴포넌트 파일명 확인 및 오타 수정
 
-const Showchat = () => {
-    const [selectedField, setSelectedField] = useState('oxygenload'); // 필드 상태
+const ShowChart = () => {
+    const [selectedField, setSelectedField] = useState('oxygenload'); // 초기 선택 필드
     const [data, setData] = useState([]); // 데이터를 저장할 상태
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [error, setError] = useState(null); // 에러 상태
 
-    // Spring Boot에서 데이터 가져오기
+    // 데이터 가져오기
     useEffect(() => {
-        fetch("http://117.17.35.50:8080/api/data")
+        fetch("http://221.143.240.57:8080/api/data") // API 주소 변경
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error("Failed to fetch data: " + response.status);
+                    throw new Error(`Failed to fetch data: ${response.status}`);
                 }
                 return response.json(); // JSON 형식의 응답을 파싱
             })
@@ -26,7 +25,7 @@ const Showchat = () => {
                 setError(error.message);
                 setLoading(false); // 로딩 상태 종료
             });
-    }, []);
+    }, []); // 빈 의존성 배열은 컴포넌트 마운트 시 한 번만 실행됨
 
     // 데이터 필드와 버튼 레이블을 매핑
     const fields = [
@@ -72,4 +71,4 @@ const Showchat = () => {
     );
 };
 
-export default Showchat;
+export default ShowChart;
