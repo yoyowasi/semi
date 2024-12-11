@@ -9,7 +9,7 @@ const ShowChart = () => {
 
     // 데이터 가져오기
     useEffect(() => {
-        fetch("http://221.143.240.57:8080/api/data") // API 주소 변경
+        fetch("http://daelim-semiconductor.duckdns.org:8080/api/data") // API 주소 변경
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data: ${response.status}`);
