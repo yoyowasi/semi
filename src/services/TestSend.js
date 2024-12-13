@@ -5,7 +5,7 @@ const App = () => {
 
     useEffect(() => {
         // Spring Boot 엔드포인트 호출
-        fetch("http://117.17.35.50:8080/hello", {
+        fetch("daelim-semiconductor.duck.org:8080/hello", {
             method: "GET", // GET 요청
         })
             .then((response) => {
