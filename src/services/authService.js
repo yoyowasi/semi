@@ -1,23 +1,27 @@
-const API_URL = 'http://daelim-semiconductor.duckdns.org:8080/api';
+const API_URL = '';
 
 // 예: 로그인 API 호출
 export const login = async (username, password) => {
     try {
-        const response = await fetch(`${API_URL}/login`, {
-            method: 'POST',
+        const response = await fetch("http://localhost:8080/api/auth/login", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json", // 반드시 설정
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }), // 올바른 JSON 형식
         });
+
         if (!response.ok) {
-            throw new Error('Login failed');
+            throw new Error("Login failed");
         }
-        return await response.json();
+
+        const data = await response.json();
+        console.log("Login Success:", data);
     } catch (error) {
-        throw error;
+        console.error("Login Error:", error);
     }
 };
+
 
 
 // 로그아웃 함수
