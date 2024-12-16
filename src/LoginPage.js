@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/authService';
-import { useAuth } from '../contexts/AuthContext';
+import { login } from './services/authService';
+import { useAuth } from './contexts/AuthContext.js';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { setUser } = useAuth();
+    const auth = useAuth();
     const navigate = useNavigate();
 
     const handleLogin = async () => {
         try {
             const token = await login(username, password);
             if (token) {
-                setUser({ loggedIn: true });
+                if (auth.setUser) {
+                    auth.setUser({ loggedIn: true });
+                }
                 navigate('/protected');
             }
         } catch (error) {
