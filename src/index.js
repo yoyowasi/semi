@@ -1,17 +1,36 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './Css/index.css';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import LoginPage from './LoginPage';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+// PrivateRoute 설정
+const PrivateRoute = ({ children }) => {
+    const { user } = useAuth();
+    console.log("PrivateRoute user state:", user); // 상태 확인
+    return user?.loggedIn ? children : <Navigate to="/login" replace />;
+};
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <React.StrictMode>
+        <AuthProvider>
+            <Router>
+                <Routes>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route
+                        path="/"
+                        element={
+                            <PrivateRoute>
+                                <App />
+                            </PrivateRoute>
+                        }
+                    />
+                </Routes>
+            </Router>
+        </AuthProvider>
+    </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
