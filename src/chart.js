@@ -9,7 +9,7 @@ const ChartComponent = ({ data, field }) => {
   useEffect(() => {
     const fetchAverage = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/data/average/dynamic?fieldName=${field}`);
+        const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data/average/dynamic?fieldName=${field}`);
         const result = await response.json();
         setBaseline(result.average);  // API에서 평균값을 가져와 상태에 설정
       } catch (error) {

@@ -1,0 +1,57 @@
+body {
+    background-color: #f4f4f4; /* 배경색 변경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 그림자 효과 */
+    width: 300px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%; /* 너비 조정 */
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px; /* 입력 필드 모서리 둥글게 */
+}
+
+button {
+    width: 100%; /* 버튼 너비 조정 */
+    padding: 10px;
+    background-color: #5c67f2; /* 버튼 색상 변경 */
+    color: white;
+    border: none;
+    border-radius: 4px; /* 버튼 모서리 둥글게 */
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4a54e1; /* 버튼 호버 색상 변경 */
+}
+.signUpButton {
+    margin-top: 10px; /* 버튼 간 간격 조정 */
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745; /* 회원가입 버튼 색상 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.signUpButton:hover {
+    background-color: #218838; /* 버튼 호버 시 색상 변경 */
+}

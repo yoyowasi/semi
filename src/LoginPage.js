@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from './services/authService';
 import { useAuth } from './contexts/AuthContext';
+import styles from './Css/LoginPage.module.css'; // CSS 모듈 임포트
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -28,21 +29,24 @@ const LoginPage = () => {
     };
 
     return (
-        <div>
+        <div className={styles.loginContainer}>
             <h1>Login</h1>
             <input
+                className={styles.inputField}
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
             />
             <input
+                className={styles.inputField}
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={handleLogin}>Login</button>
+            <button className={styles.loginButton} onClick={handleLogin}>로그인</button>
+            <button className={styles.loginButton} onClick={handleLogin}>회원가입</button>
         </div>
     );
 };
