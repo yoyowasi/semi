@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from '../Css/SignUpPage.module.css'; // 스타일 모듈
+import styles from '../Css/SignUpPage.module.css';
+import { register } from '../services/authService'; // register 함수 임포트 확인
 
 const SignUpPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // navigate 훅 사용
 
+    // handleSignUp 함수는 컴포넌트 내부에 위치해야 상태를 사용할 수 있습니다.
     const handleSignUp = async (event) => {
-        event.preventDefault(); // 폼 제출 시 페이지 리로드 방지
+        event.preventDefault();
         try {
-            // 여기서 회원가입 로직 구현 (API 호출 등)
-            console.log("Registering:", email, password, name);
-            // 성공 시 로그인 페이지나 다른 페이지로 리디렉션
-            navigate('/login');
+            console.log("Attempting to register with:", email, password, name);
+
+            // register 함수 호출
+            const responseMessage = await register(email, password, name);
+            console.log("Registration response:", responseMessage);
+
+            alert("Registration successful! Redirecting to login...");
+            navigate('/login'); // 로그인 페이지로 이동
         } catch (error) {
-            console.error("Registration failed:", error);
+            console.error("Registration failed:", error.message);
             alert("Registration failed. Please try again.");
         }
     };
@@ -28,25 +34,27 @@ const SignUpPage = () => {
                 <input
                     className={styles.inputField}
                     type="email"
-                    placeholder="Email"
+                    placeholder="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                     className={styles.inputField}
                     type="password"
-                    placeholder="Password"
+                    placeholder="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 <input
                     className={styles.inputField}
                     type="text"
-                    placeholder="Name"
+                    placeholder="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
-                <button className={styles.signUpButton} type="submit">Sign Up</button>
+                <button className={styles.signUpButton} type="submit">
+                    Sign Up
+                </button>
             </form>
         </div>
     );

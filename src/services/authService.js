@@ -16,16 +16,16 @@ export const login = async (username, password) => {
     console.log("Server Response:", data); // 서버에서 반환된 데이터 확인
     return data.token; // token 필드 반환
 };
-export const register = async (username, password, userrealname) => {
-    const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/user/register", {
+export const register = async (email, password, name) => {
+    const response = await fetch("http://localhost:8080/api/user/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, userrealname}),
-    })
+        body: JSON.stringify({ email, password, name}),
+    });
     if(!response.ok){
         throw new Error("Failed to register: " + response.status);
     }
-}
+};
 
 
 
