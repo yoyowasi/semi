@@ -9,7 +9,7 @@ const SignUpPage = () => {
     const [name, setName] = useState('');
     const navigate = useNavigate(); // navigate 훅 사용
 
-    // handleSignUp 함수는 컴포넌트 내부에 위치해야 상태를 사용할 수 있습니다.
+
     const handleSignUp = async (event) => {
         event.preventDefault();
         try {
@@ -47,7 +47,7 @@ const SignUpPage = () => {
                 />
                 <input
                     className={styles.inputField}
-                    type="text"
+                    type="name"
                     placeholder="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}

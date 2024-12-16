@@ -17,7 +17,7 @@ export const login = async (username, password) => {
     return data.token; // token 필드 반환
 };
 export const register = async (email, password, name) => {
-    const response = await fetch("http://localhost:8080/api/user/register", {
+    const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/user/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, name}),
