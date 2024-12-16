@@ -28,6 +28,11 @@ const LoginPage = () => {
         }
     };
 
+    const handleRegister = async () => {
+
+    }
+
+
     return (
         <div className={styles.loginContainer}>
             <h1>Login</h1>
@@ -46,7 +51,7 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
             />
             <button className={styles.loginButton} onClick={handleLogin}>로그인</button>
-            <button className={styles.loginButton} onClick={handleLogin}>회원가입</button>
+            <button className={styles.loginButton} onClick={handleRegister}>회원가입</button>
         </div>
     );
 };

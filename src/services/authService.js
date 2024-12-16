@@ -17,6 +17,18 @@ export const login = async (username, password) => {
     return data.token; // token 필드 반환
 };
 
+export const register = async (username, password, userrealname) => {
+    const response = await fetch("https://localhost:8080/api/user/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, userrealname}),
+    })
+
+    if(!response.ok){
+        throw new Error("Failed to register: " + response.status);
+    }
+}
+
 
 
 
