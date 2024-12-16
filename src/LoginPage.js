@@ -29,9 +29,8 @@ const LoginPage = () => {
     };
     // LoginPage.js의 handleRegister 함수 수정
     const handleRegister = () => {
-        navigate('./services/signup'); // 올바른 경로 사용
+        navigate('/signup'); // 절대 경로로 수정
     };
-
     return (
         <div className={styles.loginContainer}>
             <h1>Login</h1>

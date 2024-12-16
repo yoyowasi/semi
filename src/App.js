@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Showchat from './services/showchat';
 import Table from './services/table';
-import TestSend from "./services/TestSend";
+import TestSend from './services/TestSend';
 import LoginPage from './LoginPage';
-import SignUpPage from './services/signup'; // 파일 경로 확인 필요
+import SignUpPage from './services/signup';
 
 const App = () => {
     const [activeComponent, setActiveComponent] = useState('showchat');
@@ -44,31 +44,29 @@ const App = () => {
     }, [loggedIn]);
 
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />} />
-                <Route path="/login" element={<LoginPage setLoggedIn={setLoggedIn} />} />
-                <Route path="/signup" element={<SignUpPage />} />
-                <Route path="/main" element={
+        <Routes>
+            <Route path="/" element={loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />} />
+            <Route path="/login" element={<LoginPage setLoggedIn={setLoggedIn} />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/main" element={
+                <div>
+                    <h1>Welcome to the Main Page</h1>
                     <div>
-                        <h1>Welcome to the Main Page</h1>
-                        <div>
-                            <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
-                            <button onClick={() => setActiveComponent('table')}>Show Table</button>
-                            <button onClick={() => setActiveComponent('TestSend')}>Test</button>
-                        </div>
-                        <div style={{ marginTop: "20px" }}>
-                            <h2>Server Data:</h2>
-                            {error && <p style={{ color: "red" }}>Error: {error}</p>}
-                            {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : <p>Loading data...</p>}
-                        </div>
-                        {activeComponent === 'showchat' && <Showchat />}
-                        {activeComponent === 'table' && <Table />}
-                        {activeComponent === "TestSend" && <TestSend />}
+                        <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
+                        <button onClick={() => setActiveComponent('table')}>Show Table</button>
+                        <button onClick={() => setActiveComponent('TestSend')}>Test</button>
                     </div>
-                } />
-            </Routes>
-        </Router>
+                    <div style={{ marginTop: '20px' }}>
+                        <h2>Server Data:</h2>
+                        {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+                        {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : <p>Loading data...</p>}
+                    </div>
+                    {activeComponent === 'showchat' && <Showchat />}
+                    {activeComponent === 'table' && <Table />}
+                    {activeComponent === 'TestSend' && <TestSend />}
+                </div>
+            } />
+        </Routes>
     );
 };
 
