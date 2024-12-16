@@ -27,6 +27,10 @@ const LoginPage = () => {
             alert("Login failed. Please check your credentials.");
         }
     };
+    // LoginPage.js의 handleRegister 함수 수정
+    const handleRegister = () => {
+        navigate('./services/signup'); // 올바른 경로 사용
+    };
 
     return (
         <div className={styles.loginContainer}>
@@ -46,7 +50,7 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
             />
             <button className={styles.loginButton} onClick={handleLogin}>로그인</button>
-            <button className={styles.loginButton} onClick={handleLogin}>회원가입</button>
+            <button className={styles.signUpButton} onClick={handleRegister}>회원가입</button>
         </div>
     );
 };
