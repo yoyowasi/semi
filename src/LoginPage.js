@@ -11,20 +11,21 @@ const LoginPage = () => {
 
     const handleLogin = async () => {
         try {
-            const token = await login(username, password);
+            const token = await login(username, password); // 서버 요청
+            console.log("Token received:", token); // 토큰 값 확인
+
             if (token) {
-                console.log("Login successful, token:", token); // 디버깅용 로그
-                auth.setUser({ loggedIn: true });
-                localStorage.setItem('token', token);
+                console.log("Saving token to localStorage...");
+                localStorage.setItem("token", token); // 토큰 저장
+                console.log("Token saved:", localStorage.getItem("token")); // 저장된 토큰 확인
+                auth.setUser({ loggedIn: true }); // 상태 업데이트
                 navigate('/'); // 메인 화면으로 이동
             }
         } catch (error) {
-            console.error('Login Error:', error);
-            alert('Login failed');
+            console.error("Login failed:", error.message);
+            alert("Login failed. Please check your credentials.");
         }
     };
-
-
 
     return (
         <div>

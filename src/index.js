@@ -8,7 +8,7 @@ import LoginPage from './LoginPage';
 // PrivateRoute 설정
 const PrivateRoute = ({ children }) => {
     const { user } = useAuth();
-    console.log("PrivateRoute user state:", user); // 디버깅용 로그
+    console.log("PrivateRoute user state:", user); // 상태 확인
     return user?.loggedIn ? children : <Navigate to="/login" replace />;
 };
 

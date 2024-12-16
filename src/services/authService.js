@@ -2,25 +2,21 @@ const API_URL = '';
 
 // 예: 로그인 API 호출
 export const login = async (username, password) => {
-    try {
-        const response = await fetch("http://localhost:8080/api/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json", // 반드시 설정
-            },
-            body: JSON.stringify({ username, password }), // 올바른 JSON 형식
-        });
+    const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+    });
 
-        if (!response.ok) {
-            throw new Error("Login failed");
-        }
-
-        const data = await response.json();
-        console.log("Login Success:", data);
-    } catch (error) {
-        console.error("Login Error:", error);
+    if (!response.ok) {
+        throw new Error("Login failed");
     }
+
+    const data = await response.json();
+    console.log("Server Response:", data); // 서버에서 반환된 데이터 확인
+    return data.token; // token 필드 반환
 };
+
 
 
 
