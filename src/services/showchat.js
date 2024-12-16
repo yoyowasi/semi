@@ -14,7 +14,7 @@ const ShowChart = () => {
     const [selectedData, setSelectedData] = useState(null);
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/data") // API 주소 변경
+        fetch("http://daelim-semiconductor.duckdns.org:8888/api/data") // API 주소 변경
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data: ${response.status}`);

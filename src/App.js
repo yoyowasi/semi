@@ -15,7 +15,7 @@ const App = () => {
                 const token = localStorage.getItem("token"); // 토큰 가져오기
                 if (!token) throw new Error("No token found. Please login.");
 
-                const response = await fetch("http://localhost:8080/api/data", {
+                const response = await fetch("http://daelim-semiconductor.duckdns.org:8888/api/data", {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,

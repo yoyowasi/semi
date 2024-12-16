@@ -2,7 +2,7 @@ const API_URL = '';
 
 // 예: 로그인 API 호출
 export const login = async (username, password) => {
-    const response = await fetch("http://localhost:8080/api/auth/login", {
+    const response = await fetch("http://daelim-semiconductor.duckdns.org:8888/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
