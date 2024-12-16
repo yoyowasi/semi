@@ -12,7 +12,7 @@ export const login = async (username, password) => {
         throw error;
     }
 };
-
+//
 // 로그아웃 함수
 export const logout = () => {
     localStorage.removeItem('jwtToken'); // 로컬 스토리지에서 토큰 제거
