@@ -1,20 +1,20 @@
     import React, { useEffect, useState } from 'react';
     import { useTable } from 'react-table';
-    import result from '../ProcessedData.json';
+    // import result from '../ProcessedData.json';
 
     const Table = () => {
         const [data, setData] = useState([]); // 데이터를 저장할 상태
 
-        useEffect(() => {
-            setData(result); // 로컬 JSON 데이터로 상태 설정
-        }, []);
+        // useEffect(() => {
+        //     setData(result); // 로컬 JSON 데이터로 상태 설정
+        // }, []);
 
 
 
         // API에서 데이터를 가져오는 함수
         useEffect(() => {
             const fetchData = async () => {
-                const response = await fetch('http://daelim-semiconductor.duckdns.org:8888/api/data');
+                const response = await fetch('http://daelim-semiconductor.duckdns.org:8080/api/data');
                 const result = await response.json(); // JSON 형태로 데이터 파싱
                 setData(result); // 상태에 데이터 저장
             };
