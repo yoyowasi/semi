@@ -14,11 +14,21 @@
         // API에서 데이터를 가져오는 함수
         useEffect(() => {
             const fetchData = async () => {
-                //const response = await fetch('http://daelim-semiconductor.duckdns.org:8080/api/data'); //도메인
-                const response = await fetch('http://localhost:8080/api/data'); //로컬 호스트
+                const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
+                const response = await fetch('http://localhost:8080/api/data', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // 토큰을 헤더에 포함
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const result = await response.json(); // JSON 형태로 데이터 파싱
                 setData(result); // 상태에 데이터 저장
             };
+
             fetchData();
         }, []); // 빈 의존성 배열로 마운트 시에만 실행
 

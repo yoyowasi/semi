@@ -20,8 +20,6 @@ const App = () => {
     const fetchData = async () => {
         const token = localStorage.getItem("token");
 
-        console.log("Token from localStorage:", token);
-
         if (!token) {
             console.error("No token found. Redirecting to login.");
             return;
@@ -36,22 +34,11 @@ const App = () => {
                 },
             });
 
-            console.log("Response status:", response.status);
-
-            // 403 처리
-            if (response.status === 403) {
-                console.warn("403 Forbidden: Token might be invalid or expired.");
-                localStorage.removeItem("token");
-                alert("Access Denied: Invalid or expired token.");
-                return;
-            }
-
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: Failed to fetch data`);
             }
 
             const result = await response.json();
-            console.log("Fetched Data:", result);
             setData(result);
         } catch (err) {
             console.error("Fetch Error:", err.message);
@@ -68,23 +55,18 @@ const App = () => {
     useEffect(() => {
         const adminStatus = getIsAdmin();
         setIsAdmin(adminStatus);
-    }, [user.loggedIn]); // user.loggedIn이 바뀔 때마다 검사
-
+    }, [user.loggedIn]);
 
     return (
         <Routes>
             <Route
                 path="/"
-                element={user.loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />}
+                element={
+                    user.loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />
+                }
             />
-            <Route
-                path="/login"
-                element={<LoginPage />}
-            />
-            <Route
-                path="/signup"
-                element={<SignUpPage />}
-            />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
             <Route
                 path="/main"
                 element={
@@ -100,22 +82,21 @@ const App = () => {
                                 )}
                             </div>
 
-                            <div style={{marginTop: '20px'}}>
+                            <div style={{ marginTop: '20px' }}>
                                 <h2>Server Data:</h2>
-                                {error && <p style={{color: 'red'}}>Error: {error}</p>}
+                                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
                                 {data ? (
                                     <p>Data successfully fetched.</p>
                                 ) : (
                                     <p>Loading data...</p>
                                 )}
-
                             </div>
 
-
-                            {activeComponent === 'showchat' && <Showchat/>}
-                            {activeComponent === 'table' && <Table/>}
-                            {activeComponent === 'TestSend' && <TestSend/>}
-                            {activeComponent === 'AdminPage' &&  <AdminPage />}
+                            {/* Active component rendering */}
+                            {activeComponent === 'showchat' && <Showchat />}
+                            {activeComponent === 'table' && <Table />}//
+                            {activeComponent === 'TestSend' && <TestSend />}
+                            {activeComponent === 'AdminPage' && <AdminPage />}
                         </div>
                     ) : (
                         <Navigate replace to="/login" />
@@ -125,14 +106,9 @@ const App = () => {
             <Route
                 path="/admin"
                 element={
-                    user.loggedIn && isAdmin ? (
-                        <AdminPage />
-                    ) : (
-                        <Navigate replace to="/main" />
-                    )
+                    user.loggedIn && isAdmin ? <AdminPage /> : <Navigate replace to="/main" />
                 }
             />
-
         </Routes>
     );
 };
