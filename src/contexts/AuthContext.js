@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         console.log("Sending token in request:", token);
 
-        fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+        fetch("http://localhost:8080/api/data", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
             .then(response => response.json())
             .then(data => console.log("Received data:", data))
             .catch(err => console.error("Fetch error:", err));
-        console.log("AuthProvider checking localStorage token:", token);
+
 
         if (token) {
             setUser({ loggedIn: true });

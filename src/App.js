@@ -27,7 +27,7 @@ const App = () => {
         console.log("Sending Authorization Header:", `Bearer ${token}`);
 
         try {
-            const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+            const response = await fetch("http://localhost:8080/api/data", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`, // 토큰 전송
@@ -52,11 +52,9 @@ const App = () => {
                 }
                 return;
             }
-
-
             // JSON 데이터 처리
             const result = await response.json();
-            console.log("Fetched Data:", result);
+
             setData(result);
         } catch (err) {
             console.error("Error fetching data:", err.message);
@@ -93,19 +91,11 @@ const App = () => {
                             <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
                             <button onClick={() => setActiveComponent('table')}>Show Table</button>
                             <button onClick={() => setActiveComponent('TestSend')}>Test</button>
-                            <button onClick={() => setActiveComponent('newFeature')}>New Feature</button>
-                        </div>
-
-                        <div style={{ marginTop: '20px' }}>
-                            <h2>Server Data:</h2>
-                            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-                            {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : <p>Loading data...</p>}
                         </div>
 
                         {activeComponent === 'showchat' && <Showchat />}
                         {activeComponent === 'table' && <Table />}
                         {activeComponent === 'TestSend' && <TestSend />}
-                        {activeComponent === 'newFeature' && <div><h2>New Feature Placeholder</h2></div>}
                     </div>
                 ) : (
                     <Navigate replace to="/login" />
