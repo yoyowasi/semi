@@ -5,13 +5,16 @@ import Table from './services/table';
 import TestSend from './services/TestSend';
 import LoginPage from './LoginPage';
 import SignUpPage from './services/signup';
+import AdminPage from './services/AdminPage';
 import { useAuth } from './contexts/AuthContext';
+import { getIsAdmin } from './services/authService';
 
 const App = () => {
     const { user } = useAuth(); // AuthContext에서 상태 가져오기
     const [activeComponent, setActiveComponent] = useState('showchat');
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     // 토큰 확인 및 데이터 가져오기
     const fetchData = async () => {
@@ -62,6 +65,12 @@ const App = () => {
         }
     }, [user.loggedIn]);
 
+    useEffect(() => {
+        const adminStatus = getIsAdmin();
+        setIsAdmin(adminStatus);
+    }, [user.loggedIn]); // user.loggedIn이 바뀔 때마다 검사
+
+
     return (
         <Routes>
             <Route
@@ -86,29 +95,44 @@ const App = () => {
                                 <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
                                 <button onClick={() => setActiveComponent('table')}>Show Table</button>
                                 <button onClick={() => setActiveComponent('TestSend')}>Test</button>
-                                <button onClick={() => setActiveComponent('newFeature')}>New Feature</button>
-                            </div>
-
-                            <div style={{ marginTop: '20px' }}>
-                                <h2>Server Data:</h2>
-                                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-                                {data ? (
-                                    <pre>{JSON.stringify(data, null, 2)}</pre>
-                                ) : (
-                                    <p>Loading data...</p>
+                                {isAdmin && (
+                                    <button onClick={() => setActiveComponent('AdminPage')}>Admin Page</button>
                                 )}
                             </div>
 
-                            {activeComponent === 'showchat' && <Showchat />}
-                            {activeComponent === 'table' && <Table />}
-                            {activeComponent === 'TestSend' && <TestSend />}
-                            {activeComponent === 'newFeature' && <div><h2>New Feature Placeholder</h2></div>}
+                            <div style={{marginTop: '20px'}}>
+                                <h2>Server Data:</h2>
+                                {error && <p style={{color: 'red'}}>Error: {error}</p>}
+                                {data ? (
+                                    <p>Data successfully fetched.</p>
+                                ) : (
+                                    <p>Loading data...</p>
+                                )}
+
+                            </div>
+
+
+                            {activeComponent === 'showchat' && <Showchat/>}
+                            {activeComponent === 'table' && <Table/>}
+                            {activeComponent === 'TestSend' && <TestSend/>}
+                            {activeComponent === 'AdminPage' &&  <AdminPage />}
                         </div>
                     ) : (
                         <Navigate replace to="/login" />
                     )
                 }
             />
+            <Route
+                path="/admin"
+                element={
+                    user.loggedIn && isAdmin ? (
+                        <AdminPage />
+                    ) : (
+                        <Navigate replace to="/main" />
+                    )
+                }
+            />
+
         </Routes>
     );
 };
