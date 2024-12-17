@@ -94,7 +94,7 @@ const App = () => {
 
                             {/* Active component rendering */}
                             {activeComponent === 'showchat' && <Showchat />}
-                            {activeComponent === 'table' && <Table />}
+                            {activeComponent === 'table' && <Table />}//
                             {activeComponent === 'TestSend' && <TestSend />}
                             {activeComponent === 'AdminPage' && <AdminPage />}
                         </div>
