@@ -7,14 +7,20 @@ import LoginPage from './LoginPage';
 import SignUpPage from './services/signup';
 import AdminPage from './services/AdminPage';
 import { useAuth } from './contexts/AuthContext';
-import { getIsAdmin } from './services/authService';
+import { getIsAdmin, logout } from './services/authService'; // 로그아웃 함수 추가
 
 const App = () => {
-    const { user } = useAuth(); // AuthContext에서 상태 가져오기
+    const { user, setUser } = useAuth(); // AuthContext에서 상태 가져오기
     const [activeComponent, setActiveComponent] = useState('showchat');
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+
+    // 로그아웃 함수
+    const handleLogout = () => {
+        logout(); // 토큰 제거
+        setUser({ loggedIn: false }); // AuthContext 상태 업데이트
+    };
 
     // 토큰 확인 및 데이터 가져오기
     const fetchData = async () => {
@@ -58,58 +64,69 @@ const App = () => {
     }, [user.loggedIn]);
 
     return (
-        <Routes>
-            <Route
-                path="/"
-                element={
-                    user.loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />
-                }
-            />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route
-                path="/main"
-                element={
-                    user.loggedIn ? (
-                        <div>
-                            <h1>Welcome to the Main Page</h1>
+        <div>
+            {/* 로그아웃 버튼 */}
+            {user.loggedIn && (
+                <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                    <button onClick={handleLogout} style={{ padding: '10px 15px', cursor: 'pointer' }}>
+                        Logout
+                    </button>
+                </div>
+            )}
+
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        user.loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />
+                    }
+                />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route
+                    path="/main"
+                    element={
+                        user.loggedIn ? (
                             <div>
-                                <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
-                                <button onClick={() => setActiveComponent('table')}>Show Table</button>
-                                <button onClick={() => setActiveComponent('TestSend')}>Test</button>
-                                {isAdmin && (
-                                    <button onClick={() => setActiveComponent('AdminPage')}>Admin Page</button>
-                                )}
-                            </div>
+                                <h1>Welcome to the Main Page</h1>
+                                <div>
+                                    <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
+                                    <button onClick={() => setActiveComponent('table')}>Show Table</button>
+                                    <button onClick={() => setActiveComponent('TestSend')}>Test</button>
+                                    {isAdmin && (
+                                        <button onClick={() => setActiveComponent('AdminPage')}>Admin Page</button>
+                                    )}
+                                </div>
 
-                            <div style={{ marginTop: '20px' }}>
-                                <h2>Server Data:</h2>
-                                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-                                {data ? (
-                                    <p>Data successfully fetched.</p>
-                                ) : (
-                                    <p>Loading data...</p>
-                                )}
-                            </div>
+                                <div style={{ marginTop: '20px' }}>
+                                    <h2>Server Data:</h2>
+                                    {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+                                    {data ? (
+                                        <p>Data successfully fetched.</p>
+                                    ) : (
+                                        <p>Loading data...</p>
+                                    )}
+                                </div>
 
-                            {/* Active component rendering */}
-                            {activeComponent === 'showchat' && <Showchat />}
-                            {activeComponent === 'table' && <Table />}//
-                            {activeComponent === 'TestSend' && <TestSend />}
-                            {activeComponent === 'AdminPage' && <AdminPage />}
-                        </div>
-                    ) : (
-                        <Navigate replace to="/login" />
-                    )
-                }
-            />
-            <Route
-                path="/admin"
-                element={
-                    user.loggedIn && isAdmin ? <AdminPage /> : <Navigate replace to="/main" />
-                }
-            />
-        </Routes>
+                                {/* Active component rendering */}
+                                {activeComponent === 'showchat' && <Showchat />}
+                                {activeComponent === 'table' && <Table />}
+                                {activeComponent === 'TestSend' && <TestSend />}
+                                {activeComponent === 'AdminPage' && <AdminPage />}
+                            </div>
+                        ) : (
+                            <Navigate replace to="/login" />
+                        )
+                    }
+                />
+                <Route
+                    path="/admin"
+                    element={
+                        user.loggedIn && isAdmin ? <AdminPage /> : <Navigate replace to="/main" />
+                    }
+                />
+            </Routes>
+        </div>
     );
 };
 
