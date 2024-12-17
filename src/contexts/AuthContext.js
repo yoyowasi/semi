@@ -5,15 +5,14 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState({ loggedIn: false });
 
-    // useEffect로 localStorage의 token 확인 및 상태 업데이트
     useEffect(() => {
         const token = localStorage.getItem('token');
-        console.log("AuthProvider checking localStorage token:", token); // 로그 추가
+        console.log("AuthProvider checking localStorage token:", token);
+
         if (token) {
-            setUser({ loggedIn: true }); // 상태 업데이트
-            console.log("User logged in state set to true");
+            setUser({ loggedIn: true });
         } else {
-            console.log("No token found, user remains logged out");
+            setUser({ loggedIn: false }); // 토큰이 없을 경우 상태를 명확히 설정
         }
     }, []);
 

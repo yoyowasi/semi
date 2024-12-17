@@ -5,59 +5,59 @@ import Table from './services/table';
 import TestSend from './services/TestSend';
 import LoginPage from './LoginPage';
 import SignUpPage from './services/signup';
+import { useAuth } from './contexts/AuthContext';
 
 const App = () => {
+    const { user } = useAuth(); // AuthContext에서 상태 가져오기
     const [activeComponent, setActiveComponent] = useState('showchat');
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
-    const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token")); // 초기 상태 설정
 
     // 토큰 확인 및 데이터 가져오기
     const fetchData = async () => {
         const token = localStorage.getItem("token");
+
+        // 토큰 확인
         if (!token) {
             console.error("No token found. Redirecting to login.");
-            setLoggedIn(false);
             return;
         }
 
+        // Authorization 헤더 확인용 로그
         console.log("Sending Authorization Header:", `Bearer ${token}`);
 
         try {
-            const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+            const response = await fetch("http://localhost:8080/api/data", {
                 method: "GET",
                 headers: {
-                    "Authorization": `Bearer ${token}`,
+                    "Authorization": `Bearer ${token}`, // 토큰 전송
                     "Content-Type": "application/json",
                 },
             });
 
+            // 응답 확인
             if (!response.ok) {
                 console.error(`Error ${response.status}: Failed to fetch data`);
+
                 if (response.status === 403) {
-                    alert("Access Denied: Invalid or expired token.");
-                    localStorage.removeItem("token");
-                    setLoggedIn(false);
+                    console.warn("403 Forbidden: Token might be invalid or expired. Checking...");
+                    // 서버의 응답 메시지를 확인하고 조건에 따라 토큰을 삭제하도록 처리
+                    const errorText = await response.text();
+                    console.error("Server response:", errorText);
+
+                    if (errorText.includes("Invalid or expired")) {
+                        alert("Access Denied: Invalid or expired token.");
+                        localStorage.removeItem("token");
+                    }
                 }
                 return;
             }
 
-            // Check if the response has a body
-            const text = await response.text(); // Read response as plain text
-            if (!text) {
-                console.error("Empty response body.");
-                setError("Empty response body.");
-                return;
-            }
 
-            try {
-                const result = JSON.parse(text); // Parse the text as JSON
-                console.log("Fetched Data:", result);
-                setData(result);
-            } catch (err) {
-                console.error("Failed to parse JSON:", err.message);
-                setError("Failed to parse JSON response.");
-            }
+            // JSON 데이터 처리
+            const result = await response.json();
+            console.log("Fetched Data:", result);
+            setData(result);
         } catch (err) {
             console.error("Error fetching data:", err.message);
             setError(err.message);
@@ -65,39 +65,30 @@ const App = () => {
     };
 
 
-    // useEffect를 사용하여 fetchData 호출
     useEffect(() => {
-        if (loggedIn) {
+        if (user.loggedIn) {
             fetchData();
         }
-    }, [loggedIn]);
+    }, [user.loggedIn]);
 
     return (
         <Routes>
-            {/* Root Route */}
             <Route
                 path="/"
-                element={loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />}
+                element={user.loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />}
             />
-
-            {/* Login Route */}
             <Route
                 path="/login"
-                element={<LoginPage setLoggedIn={setLoggedIn} />}
+                element={<LoginPage />}
             />
-
-            {/* Sign Up Route */}
             <Route
                 path="/signup"
                 element={<SignUpPage />}
             />
-
-            {/* Main Route */}
             <Route path="/main" element={
-                loggedIn ? (
+                user.loggedIn ? (
                     <div>
                         <h1>Welcome to the Main Page</h1>
-                        {/* Buttons for Active Components */}
                         <div>
                             <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
                             <button onClick={() => setActiveComponent('table')}>Show Table</button>
@@ -105,14 +96,12 @@ const App = () => {
                             <button onClick={() => setActiveComponent('newFeature')}>New Feature</button>
                         </div>
 
-                        {/* Server Data */}
                         <div style={{ marginTop: '20px' }}>
                             <h2>Server Data:</h2>
                             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
                             {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : <p>Loading data...</p>}
                         </div>
 
-                        {/* Conditional Component Rendering */}
                         {activeComponent === 'showchat' && <Showchat />}
                         {activeComponent === 'table' && <Table />}
                         {activeComponent === 'TestSend' && <TestSend />}

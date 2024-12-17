@@ -14,7 +14,8 @@
         // API에서 데이터를 가져오는 함수
         useEffect(() => {
             const fetchData = async () => {
-                const response = await fetch('http://daelim-semiconductor.duckdns.org:8080/api/data');
+                //const response = await fetch('http://daelim-semiconductor.duckdns.org:8080/api/data'); //도메인
+                const response = await fetch('http://localhost:8080/api/data'); //로컬 호스트
                 const result = await response.json(); // JSON 형태로 데이터 파싱
                 setData(result); // 상태에 데이터 저장
             };
