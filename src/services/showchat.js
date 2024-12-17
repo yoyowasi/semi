@@ -14,25 +14,31 @@ const ShowChart = () => {
     const [selectedData, setSelectedData] = useState(null);
 
     useEffect(() => {
-        //fetch("http://daelim-semiconductor.duckdns.org:8080/api/data") // API 주소 변경 - 도메인
-        fetch("http://localhost:8080/api/data") // API 주소 변경 - 로컬 호스트
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch data: ${response.status}`);
-                }
-                return response.json(); // JSON 형식의 응답을 파싱
-            })
-            .then((fetchedData) => {
-                setData(fetchedData); // 데이터 상태 업데이트
-                setLoading(false); // 로딩 완료
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-                setError(error.message);
-                setLoading(false); // 로딩 상태 종료
-            });
-    }, []); // 빈 의존성 배열은 컴포넌트 마운트 시 한 번만 실행됨
+        // 토큰 값 로깅
+        const token = localStorage.getItem('token');
+        console.log('현재 저장된 토큰:', token);
 
+        // API 요청
+        fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('데이터:', data);
+            })
+            .catch(error => {
+                console.error('에러 발생:', error);
+            });
+    }, []);
     // 컴포넌트 마운트 후 로컬 데이터 파일로부터 데이터를 불러와 상태를 설정
     // useEffect(() => {
     //     fetch("http://localhost:8080/api/data") // API 주소 변경

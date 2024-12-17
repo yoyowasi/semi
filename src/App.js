@@ -27,7 +27,7 @@ const App = () => {
         console.log("Sending Authorization Header:", `Bearer ${token}`);
 
         try {
-            const response = await fetch("http://localhost:8080/api/data", {
+            const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`, // 토큰 전송

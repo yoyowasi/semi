@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../api/api'; // Axios 인스턴스
+import api from '../api'; // Axios 인스턴스
 
 const ShowChat = () => {
     const [data, setData] = useState([]);

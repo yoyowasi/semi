@@ -7,6 +7,18 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+        console.log("Sending token in request:", token);
+
+        fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`  // Bearer 토큰 형식
+            }
+        })
+            .then(response => response.json())
+            .then(data => console.log("Received data:", data))
+            .catch(err => console.error("Fetch error:", err));
         console.log("AuthProvider checking localStorage token:", token);
 
         if (token) {

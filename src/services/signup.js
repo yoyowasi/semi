@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../Css/SignUpPage.module.css';
-import { register } from '../services/authService'; // register 함수 임포트 확인
+import { register } from './authService'; // register 함수 임포트 확인
 
 const SignUpPage = () => {
     const [email, setEmail] = useState('');

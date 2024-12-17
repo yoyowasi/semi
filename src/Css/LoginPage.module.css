@@ -40,3 +40,17 @@
 .signUpButton:hover {
     background-color: #218838; /* 버튼 호버 시 색상 변경 */
 }
+.signUpButton {
+    margin-top: 10px; /* 버튼 간 간격 조정 */
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745; /* 회원가입 버튼 색상 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.signUpButton:hover {
+    background-color: #218838; /* 버튼 호버 시 색상 변경 */
+}
