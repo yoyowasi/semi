@@ -1,8 +1,9 @@
-// const API_URL = 'http://localhost:8080';
+import { jwtDecode } from 'jwt-decode';
+const API_URL = '';
 
 // 예: 로그인 API 호출
 export const login = async (username, password) => {
-    //const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/auth/login", { //도메인
+    //const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/auth/login", { //도메인 주소
     const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,5 +33,20 @@ export const register = async (email, password, name) => {
     });
     if(!response.ok){
         throw new Error("Failed to register: " + response.status);
+    }//
+};
+
+export const getIsAdmin = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+        const decoded = jwtDecode(token);
+        console.log("Decoded Token:", decoded);
+        console.log("Decoded isAdmin:", decoded.isAdmin);
+        return decoded.isAdmin === true; // 토큰에서 isAdmin 값을 확인
+    } catch (error) {
+        console.error('Failed to decode token:', error);
+        return false;
     }
 };

@@ -10,7 +10,63 @@ const ShowChart = () => {
     const [error, setError] = useState(null);
     const [selectedData, setSelectedData] = useState(null);
 
-    // 필드 배열 정의
+    useEffect(() => {
+        // 토큰 값 로깅
+        const token = localStorage.getItem('token');
+        console.log('현재 저장된 토큰:', token);
+
+        // API 요청
+        fetch("http://localhost:8080/api/data", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('데이터:', data);
+            })
+            .catch(error => {
+                console.error('에러 발생:', error);
+            });
+    }, []);
+    // 컴포넌트 마운트 후 로컬 데이터 파일로부터 데이터를 불러와 상태를 설정
+    // useEffect(() => {
+    //     fetch("http://localhost:8080/api/data") // API 주소 변경
+    //         .then((response) => {
+    //             if (!response.ok) {
+    //                 throw new Error(`Failed to fetch data: ${response.status}`);
+    //             }
+    //             return response.json(); // JSON 형식의 응답을 파싱
+    //         })
+    //         .then((fetchedData) => {
+    //             setData(fetchedData); // 데이터 상태 업데이트
+    //             setLoading(false); // 로딩 완료
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error fetching data:", error);
+    //             setError(error.message);
+    //             setLoading(false); // 로딩 상태 종료
+    //         });
+    // }, []); // 빈 의존성 배열은 컴포넌트 마운트 시 한 번만 실행됨
+
+    const handleAverageUpdate = (avg) => {
+        console.log('handleAverageUpdate called with:', avg);
+        if (avg !== undefined) {
+            setAverage(avg);
+        } else {
+            console.error('handleAverageUpdate received undefined');
+        }
+    };
+
+
+    // 차트에서 선택 가능한 다양한 데이터 필드 목록
     const fields = [
         { label: '산소부하량', field: 'oxygenload' },
         { label: '조습', field: 'humidity' },
