@@ -33,7 +33,7 @@ export const register = async (email, password, name) => {
     });
     if(!response.ok){
         throw new Error("Failed to register: " + response.status);
-    }
+    }//
 };
 
 export const getIsAdmin = () => {
