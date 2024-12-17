@@ -49,9 +49,9 @@ const App = () => {
             if (!response.ok) {
                 throw new Error(`Error ${response.status}: Failed to fetch data`);
             }
-
+          
             const result = await response.json();
-            console.log("Fetched Data:", result);
+
             setData(result);
         } catch (err) {
             console.error("Fetch Error:", err.message);
@@ -132,7 +132,14 @@ const App = () => {
                     )
                 }
             />
-
+                        {activeComponent === 'showchat' && <Showchat />}
+                        {activeComponent === 'table' && <Table />}
+                        {activeComponent === 'TestSend' && <TestSend />}
+                    </div>
+                ) : (
+                    <Navigate replace to="/login" />
+                )
+            } />
         </Routes>
     );
 };
