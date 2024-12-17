@@ -9,7 +9,7 @@ const CustomTooltip = ({ active, payload, label }) => {
                 <p>Value: {payload[0].value}</p>
                 <p>Additional Info: {JSON.stringify(payload[0].payload, null, 2)}</p>
             </div>
-        );
+        );//
     }
 
     return null;
