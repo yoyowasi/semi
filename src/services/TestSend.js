@@ -13,7 +13,7 @@ function QualityCheck() {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch('http://localhost:8080/api/data/defectRate', {
+            const response = await fetch('http://daelim-semiconductor.duckdns.org:8080/api/data/defectRate', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

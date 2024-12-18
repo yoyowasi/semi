@@ -16,7 +16,7 @@ const ShowChart = () => {
         console.log('현재 저장된 토큰:', token);
 
         // API 요청
-        fetch("http://localhost:8080/api/data", {
+        fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -101,7 +101,7 @@ const ShowChart = () => {
             setError(null);
 
             try {
-                const response = await fetch(`http://localhost:8080/api/data`, {
+                const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
