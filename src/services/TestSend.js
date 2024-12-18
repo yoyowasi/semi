@@ -1,34 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 
-const App = () => {
-    const [message, setMessage] = useState(""); // 서버에서 받은 데이터를 저장
+function QualityCheck() {
+    const [defectRate, setDefectRate] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        // Spring Boot 엔드포인트 호출
-        fetch("http://117.17.35.50:8080/hello", {
-            method: "GET", // GET 요청
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch: " + response.status);
+    const fetchDefectRate = async () => {
+        setIsLoading(true);
+        setError(null);
+
+        // 로컬 스토리지에서 토큰 가져오기
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch('http://localhost:8080/api/data/defectRate', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`  // 토큰을 Authorization 헤더에 포함
                 }
-                return response.text(); // 응답 데이터를 텍스트로 변환
-            })
-            .then((data) => {
-                setMessage(data); // 서버 응답을 상태에 저장
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-                setMessage("Error fetching data"); // 에러 발생 시 표시할 메시지
             });
-    }, []); // 컴포넌트가 처음 렌더링될 때 한 번만 실행
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch defect rate: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setDefectRate(data.defectRate); // API 응답에 따라 조정 필요
+        } catch (err) {
+            setError(`Error: ${err.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div>
-            <h1>Server Response</h1>
-            <p>{message}</p> {/* 서버 응답을 화면에 표시 */}
+            <button onClick={fetchDefectRate} disabled={isLoading}>
+                {isLoading ? 'Loading...' : 'Check Defect Rate'}
+            </button>
+            {defectRate !== null && <p>Defect Rate: {defectRate}%</p>}
+            {error && <p>{error}</p>}
         </div>
     );
-};
+}
 
-export default App;
+export default QualityCheck;

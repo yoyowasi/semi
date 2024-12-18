@@ -88,23 +88,13 @@ const App = () => {
                     element={
                         user.loggedIn ? (
                             <div>
-                                <h1>Welcome to the Main Page</h1>
+                                <h1>반도체 관리 시스템</h1>
                                 <div>
                                     <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
                                     <button onClick={() => setActiveComponent('table')}>Show Table</button>
                                     <button onClick={() => setActiveComponent('TestSend')}>Test</button>
                                     {isAdmin && (
                                         <button onClick={() => setActiveComponent('AdminPage')}>Admin Page</button>
-                                    )}
-                                </div>
-
-                                <div style={{ marginTop: '20px' }}>
-                                    <h2>Server Data:</h2>
-                                    {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-                                    {data ? (
-                                        <p>Data successfully fetched.</p>
-                                    ) : (
-                                        <p>Loading data...</p>
                                     )}
                                 </div>
 

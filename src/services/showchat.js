@@ -156,14 +156,14 @@ const ShowChart = () => {
                         <div className="selected-data">
                             <h4>클릭한 데이터:</h4>
                             <p><strong>ID:</strong> {selectedData.id}</p>
-                            <p><strong>Field Value:</strong> {selectedData[selectedField]}</p>
-                            <p><strong>Additional Info:</strong> {JSON.stringify(selectedData)}</p>
+                            <p><strong>Field Value:</strong> {selectedData.field}</p>
+                            <pre>{JSON.stringify(selectedData, null, 2)}</pre>
                         </div>
                     )}
                 </>
             )}
         </div>
-    );
+    );//
 };
 
 export default ShowChart;  // 컴포넌트를 export 하여 다른 파일에서 사용할 수 있도록 함
