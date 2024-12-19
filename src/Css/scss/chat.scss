@@ -1,0 +1,80 @@
+.data-visualization-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.buttons-container {
+  margin-bottom: 20px;
+  text-align: center;
+
+
+
+}
+
+.chart-and-average-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 80%;
+  align-items: flex-start;
+
+  .chart-container {
+    width: 600px;
+    margin-right: 250px; /* 차트를 우측으로 200px 이동 */
+
+    canvas {
+      max-width: 100%;
+    }
+  }
+
+  .average-text {
+    width: 30%;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+    min-height: 150px;
+  }
+}
+
+@media (max-width: 1440px) {
+  .chart-and-average-container {
+    flex-direction: column;
+    align-items: center;
+
+    .chart-container {
+      width: 100%;
+      padding-bottom: 20px;
+      margin-left: 0; /* 좁은 화면에서는 이동 취소 */
+    }
+
+    .average-text {
+      width: 100%;
+    }
+  }
+}
+
+/* 추가적인 미디어 쿼리를 사용하여 더 좁은 화면에서도 적절한 스타일 적용 */
+@media (max-width: 768px) {
+  .chart-and-average-container {
+    flex-direction: column; /* 더 좁은 화면에서는 차트 아래에 텍스트 컨테이너를 배치 */
+  }
+  .chart-container {
+    width: 100%;
+    padding-bottom: 20px;
+    margin-left: 0; /* 좁은 화면에서는 이동 취소 */
+  }
+
+  .average-text {
+    width: 100%;
+    margin-right: 30px;
+  }
+}
+
+

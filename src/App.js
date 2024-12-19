@@ -103,6 +103,7 @@ const App = () => {
                 </div>
             )}
 
+
             <Routes>
                 <Route
                     path="/"
@@ -124,11 +125,11 @@ const App = () => {
                             <div>
                                 <h1>반도체 관리 시스템</h1>
                                 <div>
-                                    <button onClick={() => setActiveComponent('showchat')}>Show Chart</button>
-                                    <button onClick={() => setActiveComponent('table')}>Show Table</button>
-                                    <button onClick={() => setActiveComponent('TestSend')}>Test</button>
+                                    <button onClick={() => setActiveComponent('showchat')}>차트 보기</button>
+                                    <button onClick={() => setActiveComponent('table')}>테이블 보기</button>
+                                    <button onClick={() => setActiveComponent('TestSend')}>불량률 체크</button>
                                     {isAdmin && (
-                                        <button onClick={() => setActiveComponent('AdminPage')}>Admin Page</button>
+                                        <button onClick={() => setActiveComponent('AdminPage')}>관리자 페이지</button>
                                     )}
                                 </div>
 

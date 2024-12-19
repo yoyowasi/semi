@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../Css/Text.css';
+import '../Css/scss/chat.scss'
 import ChartWithClickablePoints from './ChartWithClickablePoints'; // 현재 폴더에 위치
 
 const ShowChart = () => {
@@ -9,52 +9,49 @@ const ShowChart = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedData, setSelectedData] = useState(null);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth); // 창 너비 상태 추가
 
     useEffect(() => {
-        // 토큰 값 로깅
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    useEffect(() => {
         const token = localStorage.getItem('token');
         console.log('현재 저장된 토큰:', token);
 
-        // API 요청
-        fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            }
-        })
-            .then(response => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('데이터:', data);
-            })
-            .catch(error => {
-                console.error('에러 발생:', error);
-            });
+
+                const fetchedData = await response.json();
+                setData(fetchedData);
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
-    // 컴포넌트 마운트 후 로컬 데이터 파일로부터 데이터를 불러와 상태를 설정
-    // useEffect(() => {
-    //     fetch("http://localhost:8080/api/data") // API 주소 변경
-    //         .then((response) => {
-    //             if (!response.ok) {
-    //                 throw new Error(`Failed to fetch data: ${response.status}`);
-    //             }
-    //             return response.json(); // JSON 형식의 응답을 파싱
-    //         })
-    //         .then((fetchedData) => {
-    //             setData(fetchedData); // 데이터 상태 업데이트
-    //             setLoading(false); // 로딩 완료
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error fetching data:", error);
-    //             setError(error.message);
-    //             setLoading(false); // 로딩 상태 종료
-    //         });
-    // }, []); // 빈 의존성 배열은 컴포넌트 마운트 시 한 번만 실행됨
 
     const handleAverageUpdate = (avg) => {
         console.log('handleAverageUpdate called with:', avg);
@@ -65,6 +62,10 @@ const ShowChart = () => {
         }
     };
 
+    const handlePointClick = (clickedData) => {
+        console.log("Clicked Data:", clickedData);
+        setSelectedData(clickedData);
+    };
 
     // 차트에서 선택 가능한 다양한 데이터 필드 목록
     const fields = [
@@ -88,43 +89,20 @@ const ShowChart = () => {
         { label: '직전 용선온도', field: 'previousHotMetalTemperature' },
     ];
 
-    // 포인트 클릭 핸들러
-    const handlePointClick = (clickedData) => {
-        console.log("Clicked Data:", clickedData);
-        setSelectedData(clickedData);
+    const chartWidth = windowWidth < 768 ? 300 : 600; // 화면 크기에 따라 차트의 너비를 조정
+    const responsiveStyle = {
+        position: 'absolute',
+        top: windowWidth < 768 ? '110%' : '30%',
+        right: windowWidth < 768 ? '5%' : '20%',
+        width: windowWidth < 768 ? '90%' : '22%',
+        backgroundColor: '#f9f9f9',
+        padding: '1%',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        textAlign: 'left',
+        overflowY: 'auto',
+        maxHeight: '300px',
     };
-
-    useEffect(() => {
-        const fetchChartData = async () => {
-            const token = localStorage.getItem('token');
-            setLoading(true);
-            setError(null);
-
-            try {
-                const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
-                }
-
-                const fetchedData = await response.json();
-                setData(fetchedData);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching chart data:', error);
-                setError(error.message);
-                setLoading(false);
-            }
-        };
-
-        fetchChartData();
-    }, []);
 
     return (
         <div className="data-visualization-container">
@@ -140,30 +118,37 @@ const ShowChart = () => {
             {!loading && !error && data.length > 0 && (
                 <>
                     <div className="chart-and-average-container">
-                        <div className="chart-container">
+                        <div className="chart-container" style={{ width: chartWidth }}>
                             <ChartWithClickablePoints
                                 data={data}
                                 field={selectedField}
                                 onBaselineUpdate={setAverage}
                                 onPointClick={handlePointClick}
+                                width={chartWidth} // 차트 컴포넌트에 너비 전달
                             />
                         </div>
                         <div className="average-text">
                             <p>평균값: {average !== null && average !== undefined ? average.toFixed(2) : 'Loading...'}</p>
+                            {selectedData && (
+                                <div>
+                                    <h4>클릭한 데이터:</h4>
+                                    <p><strong>ID:</strong> {selectedData.id}</p>
+                                    <pre>{JSON.stringify(selectedData, null, 2)}</pre>
+                                </div>
+                            )}
                         </div>
                     </div>
-                    {selectedData && (
-                        <div className="selected-data">
-                            <h4>클릭한 데이터:</h4>
-                            <p><strong>ID:</strong> {selectedData.id}</p>
-                            <p><strong>Field Value:</strong> {selectedData.field}</p>
-                            <pre>{JSON.stringify(selectedData, null, 2)}</pre>
-                        </div>
-                    )}
+                    {/*{selectedData && (*/}
+                    {/*    <div className="average-text" style={responsiveStyle}>*/}
+                    {/*        <h4>클릭한 데이터:</h4>*/}
+                    {/*        <p><strong>ID:</strong> {selectedData.id}</p>*/}
+                    {/*        <pre>{JSON.stringify(selectedData, null, 2)}</pre>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
                 </>
             )}
         </div>
-    );//
+    );
 };
 
-export default ShowChart;  // 컴포넌트를 export 하여 다른 파일에서 사용할 수 있도록 함
+export default ShowChart;

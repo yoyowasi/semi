@@ -17,7 +17,6 @@ export const AuthProvider = ({ children }) => {
             }
         })
             .then(response => response.json())
-            .then(data => console.log("Received data:", data))
             .catch(err => console.error("Fetch error:", err));
 
 

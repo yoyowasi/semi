@@ -6,7 +6,7 @@
 }
 
 .buttons-container {
-    margin-bottom: 20px;     /* 버튼과 차트 사이의 간격 */
+    margin-bottom: 2%;     /* 버튼과 차트 사이의 간격 */
     text-align: center;
 }
 
@@ -24,61 +24,85 @@
 }
 
 .average-text {
-    min-width: 150px;        /* 평균값 텍스트의 최소 너비 */
+    min-width: 10%;        /* 평균값 텍스트의 최소 너비 */
     text-align: left;        /* 텍스트를 왼쪽 정렬 */
-    margin-left: 1px;        /* 차트와의 간격 */
-    margin-top: -20px;       /* 위로 약간 이동 */
+    margin-left: 60%;       /* 차트와의 간격 */
+    margin-top: -35%;         /* 위로 약간 이동 */
     position: relative;      /* 위치를 상대적으로 설정 */
-    top: -170px;             /* 위로 10px 이동 */
-    left: -380px;             /* 왼쪽으로 10px 이동 */
+    top: -21%;               /* 위로 이동 */
+    left: -47%;              /* 왼쪽으로 이동 */
 }
 
 
 
-.selected-data {
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    text-align: left;
-    width: 350px;
-    position: absolute; /* 위치를 고정 */
-    top: 30%; /* 차트 위쪽 절반에 위치 */
-    right: 20%; /* 오른쪽으로 이동 */
-}
 .tooltip {
     background-color: #f9f9f9;
     border: 1px solid #d3d3d3;
-    padding: 10px;
+    padding: 1%;
     border-radius: 5px;
     font-family: Arial, sans-serif;
     font-size: 14px;
     text-align: left;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-}
-/* Tooltip 반응형 스타일 */
-.custom-tooltip-container {
     position: absolute;
-    top: 350px;
-    left: 50%;
     transform: translateX(-50%);
-    pointerEvents: 'none';
-    width: 90%; /* 기본 너비 설정 */
-    max-width: 400px; /* 최대 너비 제한 */
+    left: 50%;
+    width: auto; /* 너비를 자동 조정 */
+    max-width: 300px; /* 최대 너비 설정 */
+    white-space: nowrap; /* 내용 줄바꿈 방지 */
 }
 
-@media (min-width: 768px) {
-    .custom-tooltip-container {
-        width: 70%; /* 더 큰 화면에서는 너비 조정 */
+@media (max-width: 768px) {
+    .tooltip {
+        left: 10%; /* 화면이 768px 이하일 때 왼쪽에서 10% 위치에 표시 */
+        transform: translateX(0); /* 변형 리셋 */
     }
 }
 
-@media (min-width: 1024px) {
-    .custom-tooltip-container {
-        width: 50%; /* 더 큰 화면에서는 너비 조정 */
+@media (max-width: 480px) {
+    .tooltip {
+        left: 5%; /* 화면이 480px 이하일 때 왼쪽에서 5% 위치에 표시 */
+        width: 90%; /* 화면이 작을 때는 너비를 확장 */
+    }
+}
+.selected-data {
+    margin-left: 1%;
+    margin-top: 0%;
+    padding: 1%;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    text-align: left;
+    width: 22%;
+    position: absolute;
+    top: 30%;
+    right: 20%;
+}
+
+/* 화면 크기가 768px 이하일 때 적용할 스타일 */
+/* 화면 크기가 768px 이하일 때 적용할 스타일 */
+@media (max-width: 768px) {
+    .selected-data {
+        top: 20%;  /* 위치를 위쪽으로 조정 */
+        right: 5%; /* 오른쪽 여백 감소 */
     }
 }
 
+/* 더 작은 화면에서의 추가적인 조정 */
+@media (max-width: 480px) {
+    .selected-data {
+        top: 10%;  /* 더 위로 */
+        right: 2%; /* 더 작은 오른쪽 여백 */
+        width: 96%; /* 거의 전체 너비 사용 */
+    }
+}
+.data-visualization-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chart-container {
+    flex: 1 1 70%; /* 차트를 컨테이너의 70% 차지하도록 설정 */
+    padding-right: 20px; /* 오른쪽 패딩 추가 */
+}
 
 

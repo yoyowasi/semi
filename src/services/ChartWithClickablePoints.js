@@ -4,10 +4,10 @@ import { LineChart, Line, Tooltip, XAxis, YAxis, CartesianGrid, Label } from 're
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
-            <div className="tooltip" style={{ whiteSpace: 'pre-wrap' }}>
+            <div className="tooltip" style={{ whiteSpace: 'prewrap' }}>
                 <p>ID: {label}</p>
                 <p>Field Value: {payload[0].value}</p>
-                <pre>{JSON.stringify(payload[0].payload, null, 2)}</pre>
+
             </div>
         );
     }
@@ -31,7 +31,7 @@ const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick 
     const yRange = avg * 0.1;
 
     return (
-        <div style={{ position: 'relative', height: '500px' }}> {/* 컨테이너에 높이 추가 */}
+        <div style={{ position: 'relative', height: '500px' ,left: '-10%' }}> {/* 컨테이너에 높이 추가 */}
             <LineChart
                 width={800}
                 height={400}
