@@ -52,6 +52,35 @@ const App = () => {
         }
     };
 
+    // JWT 토큰 유효성 확인
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            fetch("/validate-token", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 유효한 토큰 -> 로그인 상태 유지
+                        setUser({ loggedIn: true });
+                    } else {
+                        // 토큰 만료 -> 로그아웃 처리
+                        localStorage.removeItem("token");
+                        setUser({ loggedIn: false });
+                    }
+                })
+                .catch(err => {
+                    console.error("Token validation failed:", err);
+                    localStorage.removeItem("token");
+                    setUser({ loggedIn: false });
+                });
+        } else {
+            setUser({ loggedIn: false });
+        }
+    }, [setUser]);
+
     useEffect(() => {
         if (user.loggedIn) {
             fetchData();
@@ -81,7 +110,12 @@ const App = () => {
                         user.loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />
                     }
                 />
-                <Route path="/login" element={<LoginPage />} />
+                <Route
+                    path="/login"
+                    element={
+                        user.loggedIn ? <Navigate replace to="/main" /> : <LoginPage />
+                    }
+                />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route
                     path="/main"
