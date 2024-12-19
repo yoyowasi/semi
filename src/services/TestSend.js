@@ -9,11 +9,12 @@ function QualityCheck() {
         setIsLoading(true);
         setError(null);
 
-        // 로컬 스토리지에서 토큰 가져오기
         const token = localStorage.getItem('token');
+        const fieldName = "desiredFieldName"; // 필드 이름 설정
+        const thresholdPercentage = 10; // 임계값 백분율 설정
 
         try {
-            const response = await fetch('http://daelim-semiconductor.duckdns.org:8080/api/data/defectRate', {
+            const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data/defectRate`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,13 +27,14 @@ function QualityCheck() {
             }
 
             const data = await response.json();
-            setDefectRate(data.defectRate); // API 응답에 따라 조정 필요
+            setDefectRate(data.defectRate); // API 응답에 따라 조정 필요, 데이터 구조 확인 필요
         } catch (err) {
             setError(`Error: ${err.message}`);
         } finally {
             setIsLoading(false);
         }
     };
+
 
     return (
         <div>

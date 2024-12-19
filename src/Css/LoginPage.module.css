@@ -28,7 +28,7 @@
 }
 .signUpButton {
     margin-top: 10px; /* 버튼 간 간격 조정 */
-    width: 100%;
+    width: 50%;
     padding: 10px;
     background-color: #28a745; /* 회원가입 버튼 색상 */
     color: white;
@@ -42,7 +42,7 @@
 }
 .signUpButton {
     margin-top: 10px; /* 버튼 간 간격 조정 */
-    width: 100%;
+    width: 50%;
     padding: 10px;
     background-color: #28a745; /* 회원가입 버튼 색상 */
     color: white;
