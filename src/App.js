@@ -7,25 +7,22 @@ import LoginPage from './LoginPage';
 import SignUpPage from './services/signup';
 import AdminPage from './services/AdminPage';
 import { useAuth } from './contexts/AuthContext';
-import { getIsAdmin, logout } from './services/authService'; // 로그아웃 함수 추가
+import { getIsAdmin, logout } from './services/authService';
 
 const App = () => {
-    const { user, setUser } = useAuth(); // AuthContext에서 상태 가져오기
+    const { user, setUser } = useAuth();
     const [activeComponent, setActiveComponent] = useState('showchat');
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    // 로그아웃 함수
     const handleLogout = () => {
-        logout(); // 토큰 제거
-        setUser({ loggedIn: false }); // AuthContext 상태 업데이트
+        logout();
+        setUser({ loggedIn: false });
     };
 
-    // 토큰 확인 및 데이터 가져오기
     const fetchData = async () => {
         const token = localStorage.getItem("token");
-
         if (!token) {
             console.error("No token found. Redirecting to login.");
             return;
@@ -52,7 +49,6 @@ const App = () => {
         }
     };
 
-    // JWT 토큰 유효성 확인
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -63,10 +59,8 @@ const App = () => {
             })
                 .then(response => {
                     if (response.ok) {
-                        // 유효한 토큰 -> 로그인 상태 유지
                         setUser({ loggedIn: true });
                     } else {
-                        // 토큰 만료 -> 로그아웃 처리
                         localStorage.removeItem("token");
                         setUser({ loggedIn: false });
                     }
@@ -94,7 +88,6 @@ const App = () => {
 
     return (
         <div>
-            {/* 로그아웃 버튼 */}
             {user.loggedIn && (
                 <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
                     <button onClick={handleLogout} style={{ padding: '10px 15px', cursor: 'pointer' }}>
@@ -103,53 +96,28 @@ const App = () => {
                 </div>
             )}
 
-
             <Routes>
-                <Route
-                    path="/"
-                    element={
-                        user.loggedIn ? <Navigate replace to="/login" /> : <Navigate replace to="/login" />
-                    }
-                />
-                <Route
-                    path="/login"
-                    element={
-                        user.loggedIn ? <Navigate replace to="/main" /> : <LoginPage />
-                    }
-                />
+                <Route path="/" element={<Navigate replace to={user.loggedIn ? "/main" : "/login"} />} />
+                <Route path="/login" element={user.loggedIn ? <Navigate replace to="/main" /> : <LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
-                <Route
-                    path="/main"
-                    element={
-                        user.loggedIn ? (
-                            <div>
-                                <h1>반도체 관리 시스템</h1>
-                                <div>
-                                    <button onClick={() => setActiveComponent('showchat')}>차트 보기</button>
-                                    <button onClick={() => setActiveComponent('table')}>테이블 보기</button>
-                                    <button onClick={() => setActiveComponent('TestSend')}>불량률 체크</button>
-                                    {isAdmin && (
-                                        <button onClick={() => setActiveComponent('AdminPage')}>관리자 페이지</button>
-                                    )}
-                                </div>
-
-                                {/* Active component rendering */}
-                                {activeComponent === 'showchat' && <Showchat />}
-                                {activeComponent === 'table' && <Table />}
-                                {activeComponent === 'TestSend' && <TestSend />}
-                                {activeComponent === 'AdminPage' && <AdminPage />}
-                            </div>
-                        ) : (
-                            <Navigate replace to="/login" />
-                        )
-                    }
-                />
-                <Route
-                    path="/admin"
-                    element={
-                        user.loggedIn && isAdmin ? <AdminPage /> : <Navigate replace to="/main" />
-                    }
-                />
+                <Route path="/main" element={user.loggedIn ? (
+                    <div>
+                        <h1>반도체 관리 시스템</h1>
+                        <div>
+                            <button onClick={() => setActiveComponent('showchat')}>차트 보기</button>
+                            <button onClick={() => setActiveComponent('table')}>테이블 보기</button>
+                            <button onClick={() => setActiveComponent('TestSend')}>불량률 체크</button>
+                            {isAdmin && (
+                                <button onClick={() => setActiveComponent('AdminPage')}>관리자 페이지</button>
+                            )}
+                        </div>
+                        {activeComponent === 'showchat' && <Showchat />}
+                        {activeComponent === 'table' && <Table />}
+                        {activeComponent === 'TestSend' && <TestSend />}
+                        {activeComponent === 'AdminPage' && <AdminPage />}
+                    </div>
+                ) : <Navigate replace to="/login" />} />
+                <Route path="/admin" element={user.loggedIn && isAdmin ? <AdminPage /> : <Navigate replace to="/main" />} />
             </Routes>
         </div>
     );
