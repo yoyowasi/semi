@@ -108,7 +108,7 @@ const App = () => {
                 <Route
                     path="/"
                     element={
-                        user.loggedIn ? <Navigate replace to="/main" /> : <Navigate replace to="/login" />
+                        user.loggedIn ? <Navigate replace to="/login" /> : <Navigate replace to="/login" />
                     }
                 />
                 <Route

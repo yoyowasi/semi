@@ -1,0 +1,36 @@
+// 기본 페이지 스타일을 왼쪽으로 정렬합니다.
+body {
+  margin: 5px;
+  padding: 5px;
+  text-align: left; // 모든 텍스트를 왼쪽으로 정렬
+
+  // 모든 주요 컨테이너에 대해 왼쪽 정렬을 적용
+  .data-visualization-container, .grid-container, .chart-container {
+    width: auto; // 너비를 자동으로 조정
+    margin: 5px; // 왼쪽에 마진 없음
+    padding: 5px; // 패딩 없음
+    align-items: flex-start; // 요소들을 컨테이너의 시작점에 맞춤
+  }
+}
+
+// 세부 요소에 대한 스타일
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, max-content)); // 왼쪽 정렬을 유지하면서 그리드를 정의
+  gap: 10px; // 그리드 사이 간격
+  padding: 10px; // 패딩
+  align-items: start; // 그리드 아이템을 상단으로 정렬
+}
+
+.grid-item {
+  padding: 8px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  text-align: center; // 각 그리드 아이템 내 텍스트를 중앙 정렬
+
+  &:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px); // 호버 시 약간 위로 움직임
+  }
+}
