@@ -76,5 +76,39 @@
     margin-right: 30px;
   }
 }
+// chat.scss 파일 내에 버튼 스타일 추가
+.button {
+  padding: 8px 16px;
+  font-size: 16px;
+  color: #000000;
+  background-color: #c5c5c5;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #ffd91e;
+  }
+
+  &:active {
+    background-color: #004085;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgb(241, 0, 0);
+  }
+}
+
+.button-disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+
+  &:hover,
+  &:active {
+    background-color: #6c757d;
+  }
+}
 
 
