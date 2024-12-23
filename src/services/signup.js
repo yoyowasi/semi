@@ -23,7 +23,7 @@ const SignUpPage = () => {
             navigate('/login'); // 로그인 페이지로 이동
         } catch (error) {
             console.error("Registration failed:", error.message);
-            alert("Registration failed. Please try again.");
+            alert("회원가입 실패! 다시 시도해주시기 바랍니다.");
         }
     };
 

@@ -24,7 +24,7 @@ const LoginPage = () => {
             }
         } catch (error) {
             console.error("Login failed:", error.message);
-            alert("Login failed. Please check your credentials.");
+            alert("로그인 실패!! 아이디나 비밀번호가 다릅니다!!");
         }
     };
     // LoginPage.js의 handleRegister 함수 수정
@@ -33,6 +33,7 @@ const LoginPage = () => {
     };
     return (
         <div className={styles.loginContainer}>
+            <img src="/대림대%20로고.png" alt="대림대 로고" className={styles.logo}/>
             <h1>Login</h1>
             <input
                 className={styles.inputField}

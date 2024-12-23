@@ -48,10 +48,10 @@ const AdminPage = () => {
             <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                 <tr>
-                    <th>User No</th>
-                    <th>Name</th>
+                    <th>번호</th>
+                    <th>이름</th>
                     <th>Email</th>
-                    <th>Actions</th>
+                    <th>권한승인</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -62,7 +62,7 @@ const AdminPage = () => {
                             <td>{user.user_name}</td>
                             <td>{user.userEmail}</td>
                             <td>
-                                <button onClick={() => approveUser(user.user_no)}>Approve</button>
+                                <button onClick={() => approveUser(user.user_no)}>승인</button>
                             </td>
                         </tr>
                     ))

@@ -68,7 +68,7 @@ const Table = () => {
     } = useTable({ columns, data });
 
     return (
-        <div style={{ overflow: 'auto', maxHeight: '400px' }}>
+        <div style={{ overflow: 'auto', maxHeight: '650px' }}>
             {error && <div style={{ color: 'red' }}>{error}</div>}
             <table {...getTableProps()} className="table">
                 <thead>
