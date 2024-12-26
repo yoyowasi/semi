@@ -9,7 +9,7 @@ const AdminPage = () => {
     const fetchUnapprovedUsers = async () => {
         const token = localStorage.getItem("token"); // JWT 토큰 가져오기
         try {
-            const response = await axios.get('https://daelim-semiconductor.duckdns.org:8080/api/user/unapproved-users', {
+            const response = await axios.get('https://daelim-semiconductor.duckdns.org:8443/api/user/unapproved-users', {
                 headers: {
                     Authorization: `Bearer ${token}`, // 토큰 추가
                 },
@@ -25,7 +25,7 @@ const AdminPage = () => {
     const approveUser = async (user_no) => {
         const token = localStorage.getItem("token"); // JWT 토큰 가져오기
         try {
-            await axios.post(`https://daelim-semiconductor.duckdns.org:8080/api/user/approve-user/${user_no}`, {}, {
+            await axios.post(`https://daelim-semiconductor.duckdns.org:8443/api/user/approve-user/${user_no}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             alert('User approved successfully!');
