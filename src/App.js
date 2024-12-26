@@ -29,7 +29,7 @@ const App = () => {
         }
 
         try {
-            const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+            const response = await fetch("https://daelim-semiconductor.duckdns.org:8080/api/data", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
