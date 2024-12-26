@@ -68,7 +68,6 @@ const ShowChart = () => {
 
         const fetchAiPredictedDefectRate = async () => {
             try {
-
                 const res = await fetch('http://localhost:5000/predict_defect_rate_ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -93,16 +92,27 @@ const ShowChart = () => {
                         previousHotMetalTemperature: selectedField === 'previousHotMetalTemperature' ? 1502 : 1490
                     })
                 });
+
                 if (!res.ok) {
                     throw new Error(`Failed to fetch AI predicted defect rate: ${res.status}`);
                 }
+
                 const result = await res.json();
-                setAiPredictedDefectRate(result.predictedDefectRate);
+
+                // ✅ AI 예측값이 있는지 확인
+                if (result.predictedPciRatePV !== undefined && result.predictedPciRatePV !== null) {
+                    setAiPredictedDefectRate(result.predictedPciRatePV);
+                } else {
+                    console.error('Invalid AI predicted defect rate response:', result);
+                    setAiPredictedDefectRate('Error');
+                }
+
             } catch (err) {
                 console.error('Error fetching AI predicted defect rate:', err);
-                setAiPredictedDefectRate(null);
+                setAiPredictedDefectRate('Error');
             }
         };
+
 
 
 
@@ -183,28 +193,28 @@ const ShowChart = () => {
                                 <pre>{JSON.stringify(selectedData, null, 2)}</pre>
                             </div>
                         )}
-                        {/* 📊 불량률 정보 */}
-                        {/* 📊 불량률 정보 */}
                         {defectRateData && (
                             <div style={{ marginTop: '20px' }}>
                                 <h4>불량률 정보</h4>
                                 <p>
-                                    현재 불량률: {defectRateData.defectRate !== undefined && defectRateData.defectRate !== null
-                                    ? defectRateData.defectRate.toFixed(2)
-                                    : 'Loading...'}%
+                                    현재 불량률: {defectRateData?.defectRate !== undefined && defectRateData?.defectRate !== null && !isNaN(defectRateData?.defectRate)
+                                    ? `${Number(defectRateData.defectRate).toFixed(2)}%`
+                                    : <span style={{color: 'red'}}>데이터 없음</span>}
                                 </p>
                                 <p>
-                                    예측 추후 불량률: {defectRateData.defectRate !== undefined && defectRateData.defectRate !== null
-                                    ? (defectRateData.defectRate * 1.1).toFixed(2)
-                                    : 'Loading...'}%
+                                    예측 추후 불량률: {defectRateData?.futureDefectRate !== undefined && defectRateData?.futureDefectRate !== null && !isNaN(defectRateData?.futureDefectRate)
+                                    ? `${Number(defectRateData.futureDefectRate).toFixed(2)}%`
+                                    : <span style={{color: 'red'}}>데이터 없음</span>}
                                 </p>
                                 <p>
-                                    AI 예측 불량률: {aiPredictedDefectRate !== null && aiPredictedDefectRate !== undefined && !isNaN(Number(aiPredictedDefectRate))
-                                    ? <strong>{Number(aiPredictedDefectRate).toFixed(2)}%</strong>
-                                    : <span style={{ color: 'red' }}>Loading...</span>}
+                                    AI 예측 불량률:
+                                    {aiPredictedDefectRate !== null && aiPredictedDefectRate !== undefined && !isNaN(Number(aiPredictedDefectRate))
+                                        ? <strong>{Number(aiPredictedDefectRate).toFixed(2)}%</strong>
+                                        : <span style={{color: 'red'}}>오류 발생</span>}
                                 </p>
                             </div>
                         )}
+
 
                     </div>
                 </div>
