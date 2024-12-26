@@ -28,7 +28,7 @@ const ShowChart = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://localhost:8080/api/data', {
+                const response = await fetch('http://localhost:8080/api/data/latest300DataDesc', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -47,9 +47,9 @@ const ShowChart = () => {
             }
         };
         fetchChartData();
-    }, [selectedField]); // 🚀 selectedField 변경 시 차트 데이터 새로고침
+    }, [selectedField]);
 
-    // 📊 현재 불량률 + 추후 불량률(fetch)
+    // 📊 현재 불량률 + AI 예측 불량률(fetch)
     useEffect(() => {
         const fetchDefectRate = async () => {
             try {
@@ -70,6 +70,7 @@ const ShowChart = () => {
             try {
                 const res = await fetch('http://localhost:5000/predict_defect_rate_ai', {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         oxygenload: selectedField === 'oxygenload' ? 32953 : 32000,
@@ -94,27 +95,21 @@ const ShowChart = () => {
                 });
 
                 if (!res.ok) {
-                    throw new Error(`Failed to fetch AI predicted defect rate: ${res.status}`);
+                    throw new Error(`HTTP error ${res.status}`);
                 }
 
                 const result = await res.json();
-
-                // ✅ AI 예측값이 있는지 확인
-                if (result.predictedPciRatePV !== undefined && result.predictedPciRatePV !== null) {
-                    setAiPredictedDefectRate(result.predictedPciRatePV);
+                if (typeof result.predictedDefectRate === 'number' && !isNaN(result.predictedDefectRate)) {
+                    setAiPredictedDefectRate(result.predictedDefectRate);
                 } else {
-                    console.error('Invalid AI predicted defect rate response:', result);
-                    setAiPredictedDefectRate('Error');
+                    throw new Error('Received non-numeric AI predicted defect rate');
                 }
-
             } catch (err) {
-                console.error('Error fetching AI predicted defect rate:', err);
+                console.error('Error fetching AI predicted defect rate:', err.message);
                 setAiPredictedDefectRate('Error');
+                setError(err.message);
             }
         };
-
-
-
 
         if (selectedField) {
             fetchDefectRate();
@@ -124,7 +119,7 @@ const ShowChart = () => {
 
     const handlePointClick = clickedData => {
         console.log("Clicked Data:", clickedData);
-        setSelectedData(clickedData); // 클릭한 데이터 저장
+        setSelectedData(clickedData);
     };
 
     // 📌 필드 목록
@@ -153,7 +148,6 @@ const ShowChart = () => {
 
     return (
         <div className="data-visualization-container">
-            {/* 🔘 필드 선택 버튼 */}
             <div className="buttons-container">
                 {fields.map(({ label, field }) => (
                     <button
@@ -165,8 +159,6 @@ const ShowChart = () => {
                     </button>
                 ))}
             </div>
-
-            {/* 📊 차트 및 데이터 */}
             {loading ? (
                 <div>Loading data, please wait...</div>
             ) : error ? (
@@ -182,11 +174,8 @@ const ShowChart = () => {
                             width={chartWidth}
                         />
                     </div>
-
-                    {/* 📊 평균값 */}
                     <div className="average-text">
                         <p>평균값: {average ? average.toFixed(2) : 'Loading...'}</p>
-                        {/* 📌 클릭한 데이터 */}
                         {selectedData && (
                             <div>
                                 <h4>클릭한 데이터:</h4>
@@ -202,11 +191,6 @@ const ShowChart = () => {
                                     : <span style={{color: 'red'}}>데이터 없음</span>}
                                 </p>
                                 <p>
-                                    예측 추후 불량률: {defectRateData?.futureDefectRate !== undefined && defectRateData?.futureDefectRate !== null && !isNaN(defectRateData?.futureDefectRate)
-                                    ? `${Number(defectRateData.futureDefectRate).toFixed(2)}%`
-                                    : <span style={{color: 'red'}}>데이터 없음</span>}
-                                </p>
-                                <p>
                                     AI 예측 불량률:
                                     {aiPredictedDefectRate !== null && aiPredictedDefectRate !== undefined && !isNaN(Number(aiPredictedDefectRate))
                                         ? <strong>{Number(aiPredictedDefectRate).toFixed(2)}%</strong>
@@ -214,8 +198,6 @@ const ShowChart = () => {
                                 </p>
                             </div>
                         )}
-
-
                     </div>
                 </div>
             )}
