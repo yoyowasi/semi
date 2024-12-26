@@ -16,6 +16,9 @@ const App = () => {
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
 
+    // (추가) aiTest API 응답 저장용
+    const [aiTestResult, setAiTestResult] = useState(null);
+
     const handleLogout = () => {
         logout();
         setUser({ loggedIn: false });
@@ -29,7 +32,8 @@ const App = () => {
         }
 
         try {
-            const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+            //const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+            const response = await fetch("http://localhost:8080/api/data", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -46,6 +50,39 @@ const App = () => {
         } catch (err) {
             console.error("Fetch Error:", err.message);
             setError(err.message);
+        }
+    };
+
+    // (추가) aiTest 버튼 클릭 시 /defectRateAi 호출
+    const handleAiTest = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No token found. Cannot call /defectRateAi");
+                return;
+            }
+
+            const response = await fetch("http://localhost:8080/api/data/defectRateAi", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    message: "Hello from React!",
+                    // 여기에 필요한 필드나 데이터가 있으면 추가하세요
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: Failed to call /defectRateAi`);
+            }
+
+            const result = await response.json();
+            setAiTestResult(result);
+            console.log("aiTest result:", result);
+        } catch (err) {
+            console.error("Error calling /defectRateAi:", err);
         }
     };
 
@@ -107,14 +144,27 @@ const App = () => {
                             <button onClick={() => setActiveComponent('showchat')}>차트 보기</button>
                             <button onClick={() => setActiveComponent('table')}>테이블 보기</button>
                             <button onClick={() => setActiveComponent('TestSend')}>불량률 체크</button>
+
                             {isAdmin && (
                                 <button onClick={() => setActiveComponent('AdminPage')}>관리자 페이지</button>
                             )}
+
+                            {/* (추가) aiTest 버튼 */}
+                            <button onClick={handleAiTest}>aiTest</button>
                         </div>
+
                         {activeComponent === 'showchat' && <Showchat />}
                         {activeComponent === 'table' && <Table />}
                         {activeComponent === 'TestSend' && <TestSend />}
                         {activeComponent === 'AdminPage' && <AdminPage />}
+
+                        {/* (선택) aiTest 결과 출력 */}
+                        {aiTestResult && (
+                            <div style={{ marginTop: '20px', background: '#f5f5f5', padding: '10px' }}>
+                                <h3>aiTest 응답</h3>
+                                <pre>{JSON.stringify(aiTestResult, null, 2)}</pre>
+                            </div>
+                        )}
                     </div>
                 ) : <Navigate replace to="/login" />} />
                 <Route path="/admin" element={user.loggedIn && isAdmin ? <AdminPage /> : <Navigate replace to="/main" />} />

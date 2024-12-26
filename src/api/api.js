@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://daelim-semiconductor.duckdns.org:8080', // 서버 주소
+    //baseURL: 'http://daelim-semiconductor.duckdns.org:8080', // 서버 주소
+    baseURL: 'http://localhost:8080', // 서버 주소
     headers: {
         'Content-Type': 'application/json',
     },
