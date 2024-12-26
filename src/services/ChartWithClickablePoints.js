@@ -31,7 +31,7 @@ const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick 
     const yRange = avg * 0.1;
 
     return (
-        <div style={{ position: 'relative', height: '500px' ,left: '-10%' }}> {/* 컨테이너에 높이 추가 */}
+        <div style={{ position: 'relative', height: '500px' ,left: '5%' }}> {/* 컨테이너에 높이 추가 */}
             <LineChart
                 width={800}
                 height={400}
