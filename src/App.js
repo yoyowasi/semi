@@ -10,7 +10,6 @@ import { useAuth } from './contexts/AuthContext';
 import { getIsAdmin, logout } from './services/authService';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
 
 const App = () => {
     const { user, setUser } = useAuth();
@@ -18,12 +17,16 @@ const App = () => {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [isRealTime, setIsRealTime] = useState(false);
-    const [stompClient, setStompClient] = useState(null);
+    const [isRealTime, setIsRealTime] = useState(false); // 실시간 차트 여부
+    const [stompClient, setStompClient] = useState(null); // 웹소켓 클라이언트
 
     const handleLogout = () => {
+        if (stompClient) {
+            stompClient.deactivate();
+        }
         logout();
         setUser({ loggedIn: false });
+        localStorage.removeItem("token");
     };
 
     const fetchData = async () => {
@@ -93,30 +96,39 @@ const App = () => {
 
     useEffect(() => {
         if (isRealTime && !stompClient) {
-            const socket = new SockJS('http://daelim-semiconductor.duckdns.org:8080/websocket');
-            const stompClient = Stomp.over(socket);
-
-            stompClient.connect({}, (frame) => {
-                console.log('✅ Connected to WebSocket:', frame);
-
-                // /topic/latest 주제 구독
-                stompClient.subscribe('/topic/latest', (message) => {
-                    const data = JSON.parse(message.body);
-                    console.log('📩 Received:', data);
-                    setData((prevData) => [...prevData, data]);
-                });
+            const socket = new SockJS('http://daelim-semiconductor.duckdns.org:8080/websocket', null, {
+                transports: ['websocket', 'xhr-streaming', 'xhr-polling'],
             });
 
-            setStompClient(stompClient);
+            const client = new Client({
+                webSocketFactory: () =>
+                    new SockJS(`http://daelim-semiconductor.duckdns.org:8080/websocket?token=${localStorage.getItem("token")}`),
+                onConnect: () => {
+                    console.log("WebSocket 연결 성공");
+                    client.subscribe("/topic/latest", (message) => {
+                        const newData = JSON.parse(message.body);
+                        setData((prevData) => [...prevData, newData]);
+                    });
+                },
+                onStompError: (frame) => {
+                    console.error("STOMP 오류:", frame.headers['message']);
+                },
+            });
 
-            return () => {
-                stompClient.disconnect(() => {
-                    console.log('🔌 Disconnected from WebSocket');
-                });
-                setStompClient(null);
-            };
+            client.activate();
+
+
+            setStompClient(client);
         }
+
+        return () => {
+            if (stompClient) {
+                stompClient.deactivate();
+                setStompClient(null);
+            }
+        };
     }, [isRealTime]);
+
 
     return (
         <div>
