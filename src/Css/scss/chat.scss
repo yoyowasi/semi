@@ -181,6 +181,12 @@
   color: #333;
 }
 
+.tooltip p {
+  margin: 5px 0;
+}
+.tooltip p:nth-child(3) {
+  font-weight: bold;
+}
 
 
 .average-text {
