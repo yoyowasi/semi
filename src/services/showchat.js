@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../Css/scss/chat.scss';
 import ChartWithClickablePoints from './ChartWithClickablePoints';
 
@@ -11,12 +11,19 @@ const ShowChart = () => {
     const [selectedData, setSelectedData] = useState(null);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+    const wrapperRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    // 창 크기 조절 핸들러
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // 데이터 가져오기
     useEffect(() => {
         const fetchChartData = async () => {
             setLoading(true);
@@ -38,11 +45,31 @@ const ShowChart = () => {
         fetchChartData();
     }, []);
 
+    // 포인트 클릭 핸들러
     const handlePointClick = clickedData => {
-        console.log("Clicked Data:", clickedData);
+        console.log('Clicked Data:', clickedData);
         setSelectedData(clickedData);
     };
 
+    // 드래그 기능 추가
+    const handleDragStart = (e) => {
+        setIsDragging(true);
+        setStartX(e.pageX || e.touches[0].pageX);
+        setScrollLeft(wrapperRef.current.scrollLeft);
+    };
+
+    const handleDrag = (e) => {
+        if (!isDragging) return;
+        const x = e.pageX || e.touches[0].pageX;
+        const walk = (x - startX) * 1.5; // 드래그 속도 조절
+        wrapperRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    const handleDragEnd = () => {
+        setIsDragging(false);
+    };
+
+    // 필드 목록
     const fields = [
         { label: '산소부하량', field: 'oxygenload' },
         { label: '조습', field: 'humidity' },
@@ -68,15 +95,37 @@ const ShowChart = () => {
 
     return (
         <div className="data-visualization-container">
-            <div className="buttons-container">
+            {/* Tabs Container */}
+            <div
+                className={`buttons-container ${isDragging ? 'dragging' : ''}`}
+                ref={wrapperRef}
+                onMouseDown={handleDragStart}
+                onMouseMove={handleDrag}
+                onMouseUp={handleDragEnd}
+                onMouseLeave={handleDragEnd}
+                onTouchStart={handleDragStart}
+                onTouchMove={handleDrag}
+                onTouchEnd={handleDragEnd}
+            >
                 {fields.map(({ label, field }) => (
-                    <button key={field} onClick={() => setSelectedField(field)} className="button">
+                    <button
+                        key={field}
+                        onClick={() => setSelectedField(field)}
+                        className={`button ${selectedField === field ? 'active' : ''}`}
+                    >
                         {label}
                     </button>
                 ))}
             </div>
-            {loading ? <div>Loading data, please wait...</div> : error ? <div>Error: {error}</div> : (
+
+            {/* Data Display */}
+            {loading ? (
+                <div>Loading data, please wait...</div>
+            ) : error ? (
+                <div>Error: {error}</div>
+            ) : (
                 <div className="chart-and-average-container">
+                    {/* Chart Section */}
                     <div className="chart-container" style={{ width: chartWidth }}>
                         <ChartWithClickablePoints
                             data={data}
@@ -86,6 +135,8 @@ const ShowChart = () => {
                             width={chartWidth}
                         />
                     </div>
+
+                    {/* Average Section */}
                     <div className="average-text">
                         <p>평균값: {average ? average.toFixed(2) : 'Loading...'}</p>
                         {selectedData && (

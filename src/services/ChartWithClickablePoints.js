@@ -4,10 +4,9 @@ import { LineChart, Line, Tooltip, XAxis, YAxis, CartesianGrid, Label } from 're
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
-            <div className="tooltip" style={{ whiteSpace: 'prewrap' }}>
+            <div className="tooltip">
                 <p>ID: {label}</p>
                 <p>Field Value: {payload[0].value}</p>
-
             </div>
         );
     }
@@ -31,10 +30,10 @@ const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick 
     const yRange = avg * 0.1;
 
     return (
-        <div style={{ position: 'relative', height: '500px' ,left: '-10%' }}> {/* 컨테이너에 높이 추가 */}
+        <div className="chart-container">
             <LineChart
-                width={800}
-                height={400}
+                width={800} // 최대 너비 설정
+                height={400} // 높이 설정
                 data={data}
                 onClick={(e) => {
                     if (onPointClick && e && e.activePayload) {
@@ -51,18 +50,7 @@ const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick 
                     label={{ value: 'Value', angle: -90, position: 'insideLeft' }}
                     domain={[avg - yRange, avg + yRange]}
                 />
-                <Tooltip
-                    content={<CustomTooltip />}
-                    wrapperStyle={{
-                        position: 'absolute',
-                        top: '400px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        pointerEvents: 'none',
-                        width: '400px'  // 너비를 400px로 설정
-                    }}
-                />
-
+                <Tooltip content={<CustomTooltip />} />
                 <Line type="linear" dataKey={field} stroke="#01DFD7" strokeWidth={3} dot={false} />
             </LineChart>
         </div>
