@@ -10,6 +10,7 @@ import { useAuth } from './contexts/AuthContext';
 import { getIsAdmin, logout } from './services/authService';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import './Css/App.css';
 
 const App = () => {
     const { user, setUser } = useAuth();
@@ -133,38 +134,70 @@ const App = () => {
     return (
         <div>
             {user.loggedIn && (
-                <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
-                    <button onClick={handleLogout} style={{ padding: '10px 15px', cursor: 'pointer' }}>
-                        Logout
-                    </button>
-                </div>
+                <header className="header">
+                    {/* 왼쪽 섹션: 제목 + 실시간 버튼 */}
+                    <div className="header-left">
+                        <div className="title">반도체 관리 시스템</div>
+                        <button
+                            className={`real-time-button ${isRealTime ? 'active' : ''}`}
+                            onClick={() => setIsRealTime(!isRealTime)}
+                        >
+                            {isRealTime ? '실시간 종료' : '실시간 꺼짐'}
+                        </button>
+                    </div>
+
+                    {/* 중간 섹션: 메뉴 버튼 */}
+                    <div className="header-middle">
+                        <button
+                            className={`menu-button ${activeComponent === 'showchat' ? 'active' : ''}`}
+                            onClick={() => setActiveComponent('showchat')}
+                        >
+                            차트 보기
+                        </button>
+                        <button
+                            className={`menu-button ${activeComponent === 'TestSend' ? 'active' : ''}`}
+                            onClick={() => setActiveComponent('TestSend')}
+                        >
+                            불량률 체크
+                        </button>
+                        <button
+                            className={`menu-button ${activeComponent === 'table' ? 'active' : ''}`}
+                            onClick={() => setActiveComponent('table')}
+                        >
+                            테이블 보기
+                        </button>
+                        {isAdmin && (
+                            <button
+                                className={`menu-button ${activeComponent === 'AdminPage' ? 'active' : ''}`}
+                                onClick={() => setActiveComponent('AdminPage')}
+                            >
+                                관리자 페이지
+                            </button>
+                        )}
+                    </div>
+
+
+                    {/* 오른쪽 섹션: 로그아웃 버튼 */}
+                    <div className="header-right">
+                        <button onClick={handleLogout} className="logout-button">로그아웃</button>
+                    </div>
+                </header>
             )}
 
             <Routes>
-                <Route path="/" element={<Navigate replace to={user.loggedIn ? "/main" : "/login"} />} />
-                <Route path="/login" element={user.loggedIn ? <Navigate replace to="/main" /> : <LoginPage />} />
-                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/" element={<Navigate replace to={user.loggedIn ? "/main" : "/login"}/>}/>
+                <Route path="/login" element={user.loggedIn ? <Navigate replace to="/main"/> : <LoginPage/>}/>
+                <Route path="/signup" element={<SignUpPage/>}/>
                 <Route path="/main" element={user.loggedIn ? (
                     <div>
-                        <h1>반도체 관리 시스템</h1>
-                        <div>
-                            <button onClick={() => setActiveComponent('showchat')}>차트 보기</button>
-                            <button onClick={() => setActiveComponent('table')}>테이블 보기</button>
-                            <button onClick={() => setActiveComponent('TestSend')}>불량률 체크</button>
-                            <button onClick={() => setIsRealTime(!isRealTime)}>
-                                {isRealTime ? '실시간 종료' : '실시간 시작'}
-                            </button>
-                            {isAdmin && (
-                                <button onClick={() => setActiveComponent('AdminPage')}>관리자 페이지</button>
-                            )}
-                        </div>
-                        {activeComponent === 'showchat' && <Showchat />}
-                        {activeComponent === 'table' && <Table />}
-                        {activeComponent === 'TestSend' && <TestSend />}
-                        {activeComponent === 'AdminPage' && <AdminPage />}
+                        {activeComponent === 'showchat' && <Showchat/>}
+                        {activeComponent === 'table' && <Table/>}
+                        {activeComponent === 'TestSend' && <TestSend/>}
+                        {activeComponent === 'AdminPage' && <AdminPage/>}
                     </div>
-                ) : <Navigate replace to="/login" />} />
-                <Route path="/admin" element={user.loggedIn && isAdmin ? <AdminPage /> : <Navigate replace to="/main" />} />
+                ) : <Navigate replace to="/login"/>}/>
+                <Route path="/admin"
+                       element={user.loggedIn && isAdmin ? <AdminPage/> : <Navigate replace to="/main"/>}/>
             </Routes>
         </div>
     );

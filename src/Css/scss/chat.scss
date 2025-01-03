@@ -1,3 +1,7 @@
+/* ========================= */
+/* 공통 컨테이너 스타일      */
+/* ========================= */
+
 .data-visualization-container {
   display: flex;
   flex-direction: column;
@@ -5,110 +9,243 @@
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
+  background-color: #f9fafc; /* 배경 색상 */
+  border: 1px solid #d1d5db;
+  margin-top: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
 }
+
+/* ========================= */
+/* Tabs (버튼 컨테이너)      */
+/* ========================= */
 
 .buttons-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: 2px solid #ccc;
   margin-bottom: 20px;
-  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: grab;
+  user-select: none;
+  scroll-behavior: smooth;
+  padding: 0 30px;
 
 
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 30px;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, #f9fafc, transparent);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, #f9fafc, transparent);
+  }
+  .button:last-child {
+    margin-right: 50px; /* 마지막 버튼 오른쪽 여백 추가 */
+  }
 
 }
+
+.buttons-container:active {
+  cursor: grabbing;
+}
+
+/* Tabs 버튼 스타일 */
+
+.buttons-wrapper {
+  display: flex;
+  gap: 5px;
+  transition: transform 0.3s ease-in-out;
+  will-change: transform;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  background-color: #f9f9f9;
+  margin-right: 5px;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  &.active {
+    font-weight: bold;
+    background-color: #fff;
+    border-bottom: 2px solid #007bff; /* 선택된 탭 강조 */
+    color: #007bff;
+  }
+}
+/* 좌우 네비게이션 버튼 */
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  z-index: 2;
+  padding: 5px 10px;
+  border-radius: 5px;
+
+  &.left {
+    left: 0;
+  }
+
+  &.right {
+    right: 0;
+  }
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}
+
+/* ========================= */
+/* Chart & Average 컨테이너  */
+/* ========================= */
 
 .chart-and-average-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 80%;
   align-items: flex-start;
+  width: 90%; /* 전체 너비를 90%로 조정 */
+  gap: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+}
 
-  .chart-container {
-    width: 600px;
-    margin-right: 250px; /* 차트를 우측으로 200px 이동 */
+.chart-container {
+  flex: 2; /* 비율을 조정 */
+  width: 65%; /* 너비 설정 */
+  min-width: 60%;
+  padding: 20px;
+  margin: 0 auto; /* 가운데 정렬 */
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
-    canvas {
-      max-width: 100%;
-    }
-  }
-
-  .average-text {
-    width: 30%;
-    background-color: #f8f9fa;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    position: relative;
-    min-height: 150px;
+  canvas {
+    max-width: 100%;
+    display: block;
   }
 }
+
+.recharts-tooltip-wrapper {
+  pointer-events: none;
+  width: 300px;
+  max-width: 300px;
+  text-align: center;
+}
+
+.tooltip {
+  white-space: pre-wrap;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  color: #333;
+}
+
+.tooltip p {
+  margin: 5px 0;
+}
+.tooltip p:nth-child(3) {
+  font-weight: bold;
+}
+
+
+.average-text {
+  flex: 1; /* 비율을 조정 */
+  width: 30%;
+  min-width: 30%;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* ========================= */
+/* 반응형 디자인             */
+/* ========================= */
 
 @media (max-width: 1440px) {
   .chart-and-average-container {
     flex-direction: column;
     align-items: center;
+    gap: 15px;
+    padding: 15px;
+  }
 
-    .chart-container {
-      width: 100%;
-      padding-bottom: 20px;
-      margin-left: 0; /* 좁은 화면에서는 이동 취소 */
-    }
+  .chart-container {
 
-    .average-text {
-      width: 100%;
-    }
+    padding: 15px;
+    width: 600px;
+    margin-right: 20px;
+  }
+
+  .average-text {
+    width: 90%;
+    margin-top: 10px;
   }
 }
 
-/* 추가적인 미디어 쿼리를 사용하여 더 좁은 화면에서도 적절한 스타일 적용 */
 @media (max-width: 768px) {
   .chart-and-average-container {
-    flex-direction: column; /* 더 좁은 화면에서는 차트 아래에 텍스트 컨테이너를 배치 */
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
   }
+
   .chart-container {
     width: 100%;
-    padding-bottom: 20px;
-    margin-left: 0; /* 좁은 화면에서는 이동 취소 */
+    padding: 10px;
+    margin: 0;
   }
 
   .average-text {
     width: 100%;
-    margin-right: 30px;
+    margin-top: 10px;
+  }
+
+  .buttons-container {
+    padding: 0 15px;
   }
 }
-// chat.scss 파일 내에 버튼 스타일 추가
-.button {
-  padding: 8px 16px;
-  font-size: 16px;
-  color: #000000;
-  background-color: #c5c5c5;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #ffd91e;
-  }
-
-  &:active {
-    background-color: #004085;
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 0.2rem rgb(241, 0, 0);
-  }
-}
-
-.button-disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-
-  &:hover,
-  &:active {
-    background-color: #6c757d;
-  }
-}
-
-
