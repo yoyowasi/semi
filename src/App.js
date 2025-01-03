@@ -18,8 +18,8 @@ const App = () => {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [isRealTime, setIsRealTime] = useState(false); // 실시간 차트 여부
-    const [stompClient, setStompClient] = useState(null); // 웹소켓 클라이언트
+    const [isRealTime, setIsRealTime] = useState(false);
+    const [stompClient, setStompClient] = useState(null);
 
     const handleLogout = () => {
         if (stompClient) {
@@ -96,46 +96,45 @@ const App = () => {
     }, [user.loggedIn]);
 
     useEffect(() => {
-        if (isRealTime && !stompClient) {
-            const socket = new SockJS('http://daelim-semiconductor.duckdns.org:8080/websocket', null, {
-                transports: ['websocket', 'xhr-streaming', 'xhr-polling'],
-            });
+        if (!isRealTime || stompClient) return;
 
-            const client = new Client({
-                webSocketFactory: () =>
-                    new SockJS(`http://daelim-semiconductor.duckdns.org:8080/websocket?token=${localStorage.getItem("token")}`),
-                onConnect: () => {
-                    console.log("WebSocket 연결 성공");
-                    client.subscribe("/topic/latest", (message) => {
-                        const newData = JSON.parse(message.body);
-                        setData((prevData) => [...prevData, newData]);
-                    });
-                },
-                onStompError: (frame) => {
-                    console.error("STOMP 오류:", frame.headers['message']);
-                },
-            });
-
-            client.activate();
-
-
-            setStompClient(client);
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("No token available for WebSocket connection.");
+            return;
         }
 
+        const client = new Client({
+            brokerURL: `ws://daelim-semiconductor.duckdns.org:8080/websocket?token=${token}`,
+            onConnect: () => {
+                console.log("WebSocket 연결 성공");
+
+                // WebSocket 연결 성공 시 메시지 전송 테스트
+                client.publish({
+                    destination: "/app/message",
+                    body: JSON.stringify({ message: "Hello, WebSocket!" }),
+                });
+            },
+            onStompError: (frame) => {
+                console.error("STOMP 오류:", frame.headers["message"]);
+            },
+        });
+
+        client.activate();
+        setStompClient(client);
+
         return () => {
-            if (stompClient) {
-                stompClient.deactivate();
-                setStompClient(null);
-            }
+            if (client) client.deactivate();
+            setStompClient(null);
         };
     }, [isRealTime]);
+
 
 
     return (
         <div>
             {user.loggedIn && (
                 <header className="header">
-                    {/* 왼쪽 섹션: 제목 + 실시간 버튼 */}
                     <div className="header-left">
                         <div className="title">반도체 관리 시스템</div>
                         <button
@@ -146,7 +145,6 @@ const App = () => {
                         </button>
                     </div>
 
-                    {/* 중간 섹션: 메뉴 버튼 */}
                     <div className="header-middle">
                         <button
                             className={`menu-button ${activeComponent === 'showchat' ? 'active' : ''}`}
@@ -176,8 +174,6 @@ const App = () => {
                         )}
                     </div>
 
-
-                    {/* 오른쪽 섹션: 로그아웃 버튼 */}
                     <div className="header-right">
                         <button onClick={handleLogout} className="logout-button">로그아웃</button>
                     </div>
