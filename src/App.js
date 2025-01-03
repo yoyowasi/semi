@@ -8,6 +8,8 @@ import SignUpPage from './services/signup';
 import AdminPage from './services/AdminPage';
 import { useAuth } from './contexts/AuthContext';
 import { getIsAdmin, logout } from './services/authService';
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const App = () => {
     const { user, setUser } = useAuth();
@@ -15,10 +17,16 @@ const App = () => {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isRealTime, setIsRealTime] = useState(false); // 실시간 차트 여부
+    const [stompClient, setStompClient] = useState(null); // 웹소켓 클라이언트
 
     const handleLogout = () => {
+        if (stompClient) {
+            stompClient.deactivate();
+        }
         logout();
         setUser({ loggedIn: false });
+        localStorage.removeItem("token");
     };
 
     const fetchData = async () => {
@@ -86,6 +94,42 @@ const App = () => {
         setIsAdmin(adminStatus);
     }, [user.loggedIn]);
 
+    useEffect(() => {
+        if (isRealTime && !stompClient) {
+            const socket = new SockJS('http://daelim-semiconductor.duckdns.org:8080/websocket', null, {
+                transports: ['websocket', 'xhr-streaming', 'xhr-polling'],
+            });
+
+            const client = new Client({
+                webSocketFactory: () =>
+                    new SockJS(`http://daelim-semiconductor.duckdns.org:8080/websocket?token=${localStorage.getItem("token")}`),
+                onConnect: () => {
+                    console.log("WebSocket 연결 성공");
+                    client.subscribe("/topic/latest", (message) => {
+                        const newData = JSON.parse(message.body);
+                        setData((prevData) => [...prevData, newData]);
+                    });
+                },
+                onStompError: (frame) => {
+                    console.error("STOMP 오류:", frame.headers['message']);
+                },
+            });
+
+            client.activate();
+
+
+            setStompClient(client);
+        }
+
+        return () => {
+            if (stompClient) {
+                stompClient.deactivate();
+                setStompClient(null);
+            }
+        };
+    }, [isRealTime]);
+
+
     return (
         <div>
             {user.loggedIn && (
@@ -107,6 +151,9 @@ const App = () => {
                             <button onClick={() => setActiveComponent('showchat')}>차트 보기</button>
                             <button onClick={() => setActiveComponent('table')}>테이블 보기</button>
                             <button onClick={() => setActiveComponent('TestSend')}>불량률 체크</button>
+                            <button onClick={() => setIsRealTime(!isRealTime)}>
+                                {isRealTime ? '실시간 종료' : '실시간 시작'}
+                            </button>
                             {isAdmin && (
                                 <button onClick={() => setActiveComponent('AdminPage')}>관리자 페이지</button>
                             )}
