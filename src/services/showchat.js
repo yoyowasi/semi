@@ -22,7 +22,7 @@ const ShowChart = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://daelim-semiconductor.duckdns.org:8080/api/data', {
+                const response = await fetch('http://localhost:8080/api/data', {
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
                 });
                 if (!response.ok) throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
