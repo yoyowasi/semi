@@ -26,7 +26,7 @@
   justify-content: flex-start;
   align-items: center;
   border-bottom: 2px solid #ccc;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
@@ -102,6 +102,70 @@
     color: #007bff;
   }
 }
+
+/* ========================= */
+/* Start ID와 Last ID 입력 필드 스타일 */
+/* ========================= */
+.inputs-container {
+  display: flex;
+  align-items: center; /* 세로로 가운데 정렬 */
+  gap: 15px; /* 입력 필드와 버튼 사이의 여백 */
+  padding: 1px 10px; /* 위아래 여백을 줄임, 좌우 여백도 설정 */
+
+  label {
+    font-size: 14px;
+    color: #333;
+    margin-right: 10px; /* 라벨과 입력 필드 간 여백 */
+  }
+
+  input {
+    width: 150px; /* 입력 필드 크기 조정 */
+    padding: 5px 10px; /* 입력 필드 내 여백 줄임 */
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-left: 8px;
+
+    &:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    &::placeholder {
+      color: #aaa;
+    }
+  }
+
+  /* 버튼을 가로로 정렬 */
+  .button-container {
+    display: flex;
+    gap: 10px; /* 버튼들 사이에 여백 추가 */
+  }
+
+  button {
+    padding: 5px 15px; /* 버튼의 패딩을 줄여서 여백 줄임 */
+    font-size: 14px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+  }
+}
+
+
+
 /* 좌우 네비게이션 버튼 */
 .nav-button {
   position: absolute;

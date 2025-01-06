@@ -13,6 +13,7 @@ import './Css/App.css';
 
 // ---- 추가로 사용할 컴포넌트(차트) ----
 import ChartWithClickablePoints from './services/ChartWithClickablePoints';
+import ShowChart from "./services/showchat";
 
 const App = () => {
     const { user, setUser } = useAuth();

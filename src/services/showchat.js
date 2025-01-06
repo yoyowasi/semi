@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../Css/scss/chat.scss';
 import ChartWithClickablePoints from './ChartWithClickablePoints';
 
-const ShowChart = ({}) => {
+const Showchat = ({}) => {
     const [selectedField, setSelectedField] = useState('oxygenload');
     const [data, setData] = useState([]);
     const [average, setAverage] = useState(null);
@@ -12,9 +12,11 @@ const ShowChart = ({}) => {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [selectedPoint, setSelectedPoint] = useState(null);
 
+    const [isRealTime, setIsRealTime] = useState(false); // 실시간 모드 상태 추가
+
     // 추가된 state: startId, limit
     const [startId, setStartId] = useState(0); // startId 기본값은 0
-    const [lastId, setLastId] = useState(300);   // limit 기본값은 300
+    const [lastId, setLastId] = useState(0);   // limit 기본값은 300
 
     const wrapperRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -33,7 +35,7 @@ const ShowChart = ({}) => {
         setLoading(true);
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data/${startId}/${lastId}`, {
+            const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data/latest300DataDesc`, {
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
             if (!response.ok) throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
@@ -51,6 +53,7 @@ const ShowChart = ({}) => {
     useEffect(() => {
         fetchInitialData();
     }, []); // 빈 배열로 설정하여 한 번만 실행
+
 
     const handleFetchData = async () => {
         setLoading(true);
@@ -139,7 +142,7 @@ const ShowChart = ({}) => {
                 onTouchMove={handleDrag}
                 onTouchEnd={handleDragEnd}
             >
-                {fields.map(({ label, field }) => (
+                {fields.map(({label, field}) => (
                     <button
                         key={field}
                         onClick={() => setSelectedField(field)}
@@ -150,44 +153,62 @@ const ShowChart = ({}) => {
                 ))}
             </div>
 
-            {/* Start ID와 Limit 입력 필드 추가 */}
             <div className="inputs-container">
-                <input
-                    type="number"
-                    value={startId}
-                    onChange={(e) => setStartId(Number(e.target.value))}
-                    placeholder="Start ID"
-                />
-                <input
-                    type="number"
-                    value={lastId}
-                    onChange={(e) => setLastId(Number(e.target.value))}
-                    placeholder="Last ID"
-                />
-                {/* 갱신 버튼 */}
-                <button onClick={handleFetchData}>갱신</button>
+                <label>
+                    시작값:
+                    <input
+                        type="number"
+                        value={startId === 0 ? '' : startId}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setStartId(value === '' ? '' : Number(value));
+                        }}
+                        placeholder="Start ID"
+                    />
+                </label>
+
+                <label>
+                    마지막값:
+                    <input
+                        type="number"
+                        value={lastId === 0 ? '' : lastId}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setLastId(value === '' ? '' : Number(value));
+                        }}
+                        placeholder="Last ID"
+                    />
+                </label>
+
+                <div className="button-container">
+                    <button onClick={handleFetchData}>찾기</button>
+                    {/* 다른 버튼이 있으면 추가 */}
+                </div>
             </div>
 
-            {/* Data Display */}
-            {loading ? (
-                <div>Loading data, please wait...</div>
-            ) : error ? (
-                <div>Error: {error}</div>
-            ) : (
-                <div className="chart-and-average-container">
-                    {/* Chart Section */}
-                    <div className="chart-container" style={{ width: chartWidth }}>
-                        <ChartWithClickablePoints
-                            data={data}
-                            field={selectedField}
-                            onBaselineUpdate={setAverage}
-                            onPointClick={handlePointClick}
-                            width={chartWidth}
-                        />
-                    </div>
 
-                    {/* Average Section */}
-                    <div className="average-text">
+            {/* Data Display */
+            }
+            {
+                loading ? (
+                    <div>Loading data, please wait...</div>
+                ) : error ? (
+                    <div>Error: {error}</div>
+                ) : (
+                    <div className="chart-and-average-container">
+                        {/* Chart Section */}
+                        <div className="chart-container" style={{width: chartWidth}}>
+                            <ChartWithClickablePoints
+                                data={data}
+                                field={selectedField}
+                                onBaselineUpdate={setAverage}
+                                onPointClick={handlePointClick}
+                                width={chartWidth}
+                            />
+                        </div>
+
+                        {/* Average Section */}
+                        <div className="average-text">
                         <p>평균값: {average ? average.toFixed(2) : 'Loading...'}</p>
                         {selectedData && (
                             <div>
@@ -211,5 +232,5 @@ const ShowChart = ({}) => {
 );
 };
 
-export default ShowChart;
+export default Showchat;
 
