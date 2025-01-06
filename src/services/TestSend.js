@@ -33,29 +33,63 @@ function DefectRateChecker() {
 
     const fetchDefectRate = async () => {
         if (!fieldName || !thresholdPercentage) {
-            alert('필드 이름이나 퍼센테이지가 설정 되지않았습니다!!');
+            alert('필드 이름이나 퍼센티지가 설정되지 않았습니다!!');
             return;
         }
+
+        const validFieldNames = Object.keys(fieldLabels);
+        if (!validFieldNames.includes(fieldName)) {
+            alert('유효하지 않은 필드 이름입니다.');
+            return;
+        }
+
+        const percentage = parseFloat(thresholdPercentage);
+        if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+            alert('퍼센티지는 0에서 100 사이의 실수 값을 입력해야 합니다.');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('로그인이 필요합니다.');
+            setIsLoading(false);
+            return;
+        }
+
+        const base64Url = token.split('.')[1];
+        const decodedToken = JSON.parse(atob(base64Url));
+        if (decodedToken.exp * 1000 < Date.now()) {
+            alert('토큰이 만료되었습니다. 다시 로그인해주세요.');
+            setIsLoading(false);
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
-        const token = localStorage.getItem('token');
+
+        const url = `http://daelim-semiconductor.duckdns.org:8080/api/data/defectRate?fieldName=${encodeURIComponent(fieldName)}&thresholdPercentage=${encodeURIComponent(percentage)}`;
+        console.log('Request URL:', url);
 
         try {
-            const url = `http://daelim-semiconductor.duckdns.org:8080/api/data/defectRate?fieldName=${encodeURIComponent(fieldName)}&thresholdPercentage=${encodeURIComponent(thresholdPercentage)}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
+                    'Authorization': `Bearer ${token}`,
+                },
             });
+
             if (!response.ok) {
-                throw new Error(`Failed to fetch defect rates: ${response.status} ${response.statusText}`);
+                const errorMessage = await response.text();
+                console.error('Error Response:', errorMessage);
+                throw new Error(`Failed to fetch defect rates: ${response.status} - ${errorMessage}`);
             }
 
             const data = await response.json();
+            console.log('Response Data:', data);
             setDefectIds(data);
         } catch (err) {
+            console.error('Error fetching defect rates:', err.message);
             setError(`Error: ${err.message}`);
         } finally {
             setIsLoading(false);
@@ -74,16 +108,19 @@ function DefectRateChecker() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
+                    'Authorization': `Bearer ${token}`,
+                },
             });
+
             if (!response.ok) {
                 throw new Error(`Failed to fetch defect details: ${response.status} ${response.statusText}`);
             }
 
             const details = await response.json();
+            console.log('Detail Data:', details);
             setSelectedDefectDetails(details);
         } catch (err) {
+            console.error('Error fetching defect details:', err.message);
             setError(`Error: ${err.message}`);
         } finally {
             setIsLoading(false);
@@ -119,10 +156,12 @@ function DefectRateChecker() {
                 {isLoading ? 'Loading...' : '불량율 검색'}
             </button>
 
+            {isLoading && <div className="loading-spinner">Loading...</div>}
+
             {defectIdGroups.map((group, index) => (
                 <div key={index} className="id-group">
-                    {group.map(id => (
-                        <button key={id} onClick={() => handleIdClick(id)}>
+                    {group.map((id, idx) => (
+                        <button key={`${id}-${idx}`} onClick={() => handleIdClick(id)}>
                             ID: {id}
                         </button>
                     ))}
@@ -131,13 +170,13 @@ function DefectRateChecker() {
 
             {selectedDefectDetails && (
                 <div>
-                    <h3>클릭한 id정보:</h3>
+                    <h3>클릭한 ID 정보:</h3>
                     <table>
                         <tbody>
                         {Object.entries(selectedDefectDetails).map(([key, value]) => (
                             <tr key={key}>
                                 <td>{fieldLabels[key] || key}</td>
-                                <td>{value.toString()}</td>
+                                <td>{value !== null && value !== undefined ? value.toString() : 'N/A'}</td>
                             </tr>
                         ))}
                         </tbody>
@@ -145,7 +184,11 @@ function DefectRateChecker() {
                 </div>
             )}
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && (
+                <div className="error-message">
+                    <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>
+                </div>
+            )}
         </div>
     );
 }
