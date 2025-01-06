@@ -10,6 +10,7 @@ const ShowChart = ({}) => {
     const [error, setError] = useState(null);
     const [selectedData, setSelectedData] = useState(null);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [selectedPoint, setSelectedPoint] = useState(null);
 
     // 추가된 state: startId, limit
     const [startId, setStartId] = useState(0); // startId 기본값은 0
@@ -195,11 +196,20 @@ const ShowChart = ({}) => {
                                 <pre>{JSON.stringify(selectedData, null, 2)}</pre>
                             </div>
                         )}
+                        {/* 추가 정보 섹션 */}
+                        {selectedPoint && (
+                            <>
+                                <h4>클릭된 데이터:</h4>
+                                <p><strong>ID:</strong> {selectedPoint.id}</p>
+                                <p><strong>필드값:</strong> {selectedPoint.value}</p>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
         </div>
-    );
+);
 };
 
 export default ShowChart;
+
