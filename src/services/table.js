@@ -10,7 +10,7 @@ const Table = () => {
         const fetchData = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://daelim-semiconductor.duckdns.org:8080/api/data', {
+                const response = await fetch('http://localhost:8080/api/data', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
