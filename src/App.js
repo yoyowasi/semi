@@ -11,24 +11,23 @@ import { getIsAdmin, logout } from './services/authService';
 import { Client } from '@stomp/stompjs';
 import './Css/App.css';
 
-// ---- 추가로 사용할 컴포넌트(차트) ----
-import ChartWithClickablePoints from './services/ChartWithClickablePoints';
-import ShowChart from "./services/showchat";
+// ---- (기존 코드에서) 추가로 쓰이던 차트 컴포넌트 ----
+// import ChartWithClickablePoints from './services/ChartWithClickablePoints'; // 필요없는 차트는 제거
 
 const App = () => {
     const { user, setUser } = useAuth();
 
     // ----------------- 상태 정의 ----------------- //
     const [activeComponent, setActiveComponent] = useState('showchat');
-    const [data, setData] = useState([]);      // 실시간 또는 fetch로 받아온 데이터를 담는 state
+    const [data, setData] = useState([]);      // "실시간 OR 정적 300개"를 저장
     const [error, setError] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isRealTime, setIsRealTime] = useState(false);
     const [stompClient, setStompClient] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // (신코드에서 쓰던 baseline 등 필요하다면 사용)
-    const [baseline, setBaseline] = useState(0);
+    // 예시로만 쓰였던 baseline, 제거해도 기능적으로 문제 없음
+    // const [baseline, setBaseline] = useState(0);
 
     // ----------------- 로그아웃 로직 ----------------- //
     const handleLogout = () => {
@@ -50,7 +49,7 @@ const App = () => {
 
         try {
             setLoading(true);
-            const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
+            const response = await fetch("http://localhost:8080/api/data", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -62,10 +61,12 @@ const App = () => {
                 throw new Error(`Error ${response.status}: Failed to fetch data`);
             }
 
-            const result = await response.json();
+            let result = await response.json();
+            // 뒤에서 300개만 잘라서 세팅
+            let sliced = result.slice(-300);
 
-            // 뒤에서 300개만 잘라서 셋팅
-            const sliced = result.slice(-300);
+            // ** ID 오름차순 정렬 후에 setData **
+            sliced.sort((a, b) => a.id - b.id);
             setData(sliced);
         } catch (err) {
             console.error("Fetch Error:", err.message);
@@ -117,7 +118,7 @@ const App = () => {
 
     // ----------------- WebSocket 설정 (실시간) ----------------- //
     useEffect(() => {
-        // isRealTime이 false면 연결 해제
+        // 실시간 모드 Off => 연결 해제
         if (!isRealTime) {
             if (stompClient) {
                 stompClient.deactivate();
@@ -126,7 +127,7 @@ const App = () => {
             return;
         }
 
-        // isRealTime이 true일 때만 연결
+        // 실시간 모드 On => 연결 시도
         const token = localStorage.getItem("token");
         if (!token) {
             console.error("No token available for WebSocket connection.");
@@ -134,21 +135,21 @@ const App = () => {
         }
 
         const client = new Client({
-            brokerURL: `ws://daelim-semiconductor.duckdns.org:8080/websocket?token=${token}`,
+            brokerURL: `ws://localhost:8080/websocket?token=${token}`,
             onConnect: () => {
                 console.log("WebSocket 연결 성공");
 
                 // 실시간 데이터 구독
                 client.subscribe('/topic/latest', (message) => {
-                    const newData = JSON.parse(message.body);
+                    let newData = JSON.parse(message.body);
+
+                    // 뒤에서 300개만 자르고, ID 오름차순 정렬
+                    newData.sort((a, b) => a.id - b.id);
                     const sliced = newData.slice(-300);
 
-                    // 콘솔에 sliced를 찍어 확인
                     console.log("Real-time incoming data:", sliced);
 
-                    // 기존 데이터와 합치거나, 혹은 새로 교체
-                    // 필요에 따라 concat 또는 교체 등을 결정
-                    // 여기서는 실시간 최신 데이터만 보여주고 싶다면 교체
+                    // 실시간 최신 데이터로 교체
                     setData(sliced);
                 });
             },
@@ -169,7 +170,6 @@ const App = () => {
         };
     }, [isRealTime]);
 
-    // ----------------- 화면 렌더링 ----------------- //
     return (
         <div>
             {/* (1) 헤더 영역 (로그인 시에만 노출) */}
@@ -239,26 +239,12 @@ const App = () => {
                             <div>
                                 {/* (A) showchat */}
                                 {activeComponent === 'showchat' && (
-                                    <>
-                                        {/* showchat 컴포넌트에 data/loading/error 전달 */}
-                                        <Showchat
-                                            data={data}
-                                            loading={loading}
-                                            error={error}
-                                        />
-
-                                        {/* 실시간 모드일 때만, 추가로 ChartWithClickablePoints 표시 */}
-                                        {isRealTime && (
-                                            <ChartWithClickablePoints
-                                                data={data}
-                                                field="value"
-                                                onBaselineUpdate={(avg) => setBaseline(avg)}
-                                                onPointClick={(point) => {
-                                                    console.log('Point clicked:', point);
-                                                }}
-                                            />
-                                        )}
-                                    </>
+                                    <Showchat
+                                        parentData={data}       // 부모의 "실시간(또는 정적)" 데이터
+                                        loading={loading}
+                                        error={error}
+                                        isRealTime={isRealTime}
+                                    />
                                 )}
 
                                 {/* (B) table */}

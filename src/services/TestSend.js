@@ -67,7 +67,7 @@ function DefectRateChecker() {
         setIsLoading(true);
         setError(null);
 
-        const url = `http://daelim-semiconductor.duckdns.org:8080/api/data/defectRate?fieldName=${encodeURIComponent(fieldName)}&thresholdPercentage=${encodeURIComponent(percentage)}`;
+        const url = `http://localhost:8080/api/data/defectRate?fieldName=${encodeURIComponent(fieldName)}&thresholdPercentage=${encodeURIComponent(percentage)}`;
         console.log('Request URL:', url);
 
         try {
@@ -103,7 +103,7 @@ function DefectRateChecker() {
 
         const token = localStorage.getItem('token');
         try {
-            const url = `http://daelim-semiconductor.duckdns.org:8080/api/data/${encodeURIComponent(id)}`;
+            const url = `http://localhost:8080/api/data/${encodeURIComponent(id)}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
