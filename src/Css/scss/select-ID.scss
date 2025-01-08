@@ -34,3 +34,148 @@ body {
     transform: translateY(-2px); // 호버 시 약간 위로 움직임
   }
 }
+
+.defect-rate-checker-container {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  max-width: 800px;
+  font-family: 'Arial', sans-serif;
+
+  .defect-rate-header {
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #333;
+    }
+  }
+
+  .defect-rate-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    select,
+    input[type="number"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+
+      &:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+      }
+    }
+
+    button {
+      padding: 10px;
+      background-color: #3498db;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #2980b9;
+      }
+
+      &:disabled {
+        background-color: #bdc3c7;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .defect-rate-loading {
+    text-align: center;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .defect-rate-id-groups {
+    .defect-rate-id-group {
+      button {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+          background-color: #e0e0e0;
+          transform: translateY(-2px);
+        }
+
+        // 상한선 데이터 버튼 (빨간색 계열)
+        /*&.above-threshold {
+          background-color: #ffcccc;
+          border-color: #ff6f6f;
+
+          &:hover {
+            background-color: #ffb3b3;
+          }
+
+          &.active {
+            background-color: #ff6f6f;
+            color: white;
+          }
+        }
+
+        // 하한선 데이터 버튼 (파란색 계열)
+        &.below-threshold {
+          background-color: #cce5ff;
+          border-color: #5aa3ff;
+
+          &:hover {
+            background-color: #b3daff;
+          }
+
+          &.active {
+            background-color: #5aa3ff;
+            color: white;
+          }
+        }*/
+      }
+    }
+  }
+
+
+  .defect-rate-details {
+    margin-top: 20px;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      td {
+        padding: 8px;
+        border: 1px solid #ccc;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+    }
+  }
+
+  .defect-rate-error {
+    margin-top: 20px;
+    text-align: center;
+
+    p {
+      color: red;
+      font-weight: bold;
+    }
+  }
+}
