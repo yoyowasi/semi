@@ -45,7 +45,7 @@ const filterData = (data, maxPoints) => {
 };
 
 // 메인 차트 컴포넌트
-const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick, width = 800, height = 400 }) => {
+const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick, width = 2000, height = 400 }) => {
     const [avg, setAvg] = useState(0);
     const [aboveRangePoints, setAboveRangePoints] = useState([]);
     const [belowRangePoints, setBelowRangePoints] = useState([]);
@@ -86,13 +86,15 @@ const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick,
     const endId = filteredData[filteredData.length - 1]?.id || 1000;
     const ticks = calculateTicks(startId, endId);
 
+    const chartWidth = 800; // 화면 전체 크기에서 여유 공간 제거
+    const chartHeight = 400; // 고정 높이
 
     return (
         <div className="chart-container">
             {/* 차트 */}
             <LineChart
-                width={width}
-                height={height}
+                width={chartWidth}
+                height={chartHeight}
                 data={data.map(item => ({ ...item, avg }))}
                 onClick={(e) => {
                     if (onPointClick && e && e.activePayload) {
