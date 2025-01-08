@@ -313,3 +313,52 @@
     padding: 0 15px;
   }
 }
+
+.chart-buttons {
+  margin-top: 20px;
+  text-align: center;
+
+  h4 {
+    margin-bottom: 10px;
+  }
+
+  button {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #e9ecef;
+    }
+
+    // 상계 버튼 스타일
+    &.up-button {
+      background-color: #fddede; // 연한 붉은색
+      color: #b30000;
+
+      &.active {
+        background-color: #ff4d4d; // 붉은색
+        color: white;
+        border-color: #b30000;
+      }
+    }
+
+    // 하계 버튼 스타일
+    &.down-button {
+      background-color: #deeaff; // 연한 하늘색
+      color: #0056b3;
+
+      &.active {
+        background-color: #007bff; // 파란색
+        color: white;
+        border-color: #0056b3;
+      }
+    }
+  }
+}
+

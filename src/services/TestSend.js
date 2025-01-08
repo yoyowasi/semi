@@ -138,38 +138,59 @@ function DefectRateChecker() {
     const defectIdGroups = chunkArray(defectIds, 5);
 
     return (
-        <div className="data-visualization-container">
-            <h1>불량율 확인</h1>
-            <select value={fieldName} onChange={e => setFieldName(e.target.value)}>
-                <option value="">검색하고싶은 필드 고르기</option>
-                {Object.entries(fieldLabels).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
-                ))}
-            </select>
-            <input
-                type="number"
-                placeholder="% 입력"
-                value={thresholdPercentage}
-                onChange={e => setThresholdPercentage(e.target.value)}
-            />
-            <button onClick={fetchDefectRate} disabled={isLoading}>
-                {isLoading ? 'Loading...' : '불량율 검색'}
-            </button>
+        <div className="defect-rate-checker-container">
+            <div className="defect-rate-header">
+                <h1>불량율 확인</h1>
+            </div>
 
-            {isLoading && <div className="loading-spinner">Loading...</div>}
-
-            {defectIdGroups.map((group, index) => (
-                <div key={index} className="id-group">
-                    {group.map((id, idx) => (
-                        <button key={`${id}-${idx}`} onClick={() => handleIdClick(id)}>
-                            ID: {id}
-                        </button>
+            <div className="defect-rate-filters">
+                <select value={fieldName} onChange={e => setFieldName(e.target.value)}>
+                    <option value="">검색하고싶은 필드 고르기</option>
+                    {Object.entries(fieldLabels).map(([key, value]) => (
+                        <option key={key} value={key}>{value}</option>
                     ))}
-                </div>
-            ))}
+                </select>
+                <input
+                    type="number"
+                    placeholder="% 입력"
+                    value={thresholdPercentage}
+                    onChange={e => setThresholdPercentage(e.target.value)}
+                />
+                <button onClick={fetchDefectRate} disabled={isLoading}>
+                    {isLoading ? 'Loading...' : '불량율 검색'}
+                </button>
+            </div>
+
+            {isLoading && <div className="defect-rate-loading">Loading...</div>}
+
+            <div className="defect-rate-id-groups">
+                {defectIdGroups.map((group, index) => (
+                    <div key={index} className="defect-rate-id-group">
+                        {group.map((id, idx) => {
+                            const percentage = parseFloat(thresholdPercentage);
+                            const isAboveThreshold = !isNaN(percentage) && id >= percentage * 1.1;
+                            const isBelowThreshold = !isNaN(percentage) && id <= percentage * 0.9;
+
+                            return (
+                                <button
+                                    key={`${id}-${idx}`}
+                                    onClick={() => handleIdClick(id)}
+                                    className={`
+                                        ${isAboveThreshold ? 'above-threshold' : ''}
+                                        ${isBelowThreshold ? 'below-threshold' : ''}
+                                        ${selectedDefectId === id ? 'active' : ''}
+                                    `}
+                                >
+                                    ID: {id}
+                                </button>
+                            );
+                        })}
+                    </div>
+                ))}
+            </div>
 
             {selectedDefectDetails && (
-                <div>
+                <div className="defect-rate-details">
                     <h3>클릭한 ID 정보:</h3>
                     <table>
                         <tbody>
@@ -185,8 +206,8 @@ function DefectRateChecker() {
             )}
 
             {error && (
-                <div className="error-message">
-                    <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>
+                <div className="defect-rate-error">
+                    <p>{error}</p>
                 </div>
             )}
         </div>

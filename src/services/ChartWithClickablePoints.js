@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LineChart, Line, Tooltip, XAxis, YAxis, CartesianGrid, ReferenceLine, Scatter } from 'recharts';
+import {LineChart, Line, Tooltip, XAxis, YAxis, CartesianGrid, ReferenceLine, Scatter, ResponsiveContainer} from 'recharts';
 import '../Css/scss/chat.scss';
 
 // 숫자 포맷터 함수
@@ -10,29 +10,31 @@ const formatNumber = (num) => {
     return num.toFixed(2);                                       // 소수점 둘째 자리
 };
 
-// 간격 계산 및 Tick 배열 생성 함수
 const calculateTicks = (startId, endId) => {
     // 시작 값과 종료 값 정렬
     if (startId > endId) [startId, endId] = [endId, startId];
 
-    // 시작 ID를 10의 배수로 정렬
-    startId = Math.ceil(startId / 10) * 10;
-
     const range = endId - startId;
-    const maxTicks = 20; // 최대 20개의 Ticks만 표시
-    let step = Math.ceil(range / maxTicks);
+    const maxTicks = 20; // 최대 Tick 개수
+    let step = Math.ceil(range / maxTicks); // 기본 간격 계산
 
-    // step 값을 무조건 10의 배수로 강제
-    step = Math.ceil(step / 10) * 10;
+    // step 값을 항상 5의 배수로 강제
+    step = Math.ceil(step / 5) * 5;
+
+    // 시작점을 step의 배수로 정렬
+    const startTick = Math.floor(startId / step) * step;
 
     // Ticks 배열 생성
     const ticks = [];
-    for (let i = startId; i <= endId; i += step) {
+    for (let i = startTick; i <= endId; i += step) {
         ticks.push(i);
     }
 
     return ticks;
 };
+
+
+
 
 
 const filterData = (data, maxPoints) => {
@@ -45,11 +47,12 @@ const filterData = (data, maxPoints) => {
 };
 
 // 메인 차트 컴포넌트
-const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick, width = 800, height = 400 }) => {
+const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick}) => {
     const [avg, setAvg] = useState(0);
     const [aboveRangePoints, setAboveRangePoints] = useState([]);
     const [belowRangePoints, setBelowRangePoints] = useState([]);
     const [selectedPoint, setSelectedPoint] = useState(null); // 선택한 데이터 저장
+    const [verticalLines, setVerticalLines] = useState([]); // 세로선 저장
 
     useEffect(() => {
         if (!data || data.length === 0) return;
@@ -86,97 +89,87 @@ const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick,
     const endId = filteredData[filteredData.length - 1]?.id || 1000;
     const ticks = calculateTicks(startId, endId);
 
+    const [selectedPointId, setSelectedPointId] = useState(null);
+
+    const handleButtonClick = (point) => {
+        setVerticalLines((prevLines) => {
+            const existingLine = prevLines.find((line) => line.id === point.id);
+            if (existingLine) {
+                // 이미 존재하면 visible 상태를 토글
+                return prevLines.map((line) =>
+                    line.id === point.id ? { ...line, visible: !line.visible } : line
+                );
+            }
+            // 새로운 세로선 추가 (상계/하계 구분 포함)
+            const isAbove = aboveRangePoints.some((p) => p.id === point.id);
+            return [...prevLines, { id: point.id, visible: true, color: isAbove ? 'red' : 'blue' }];
+        });
+        if (onPointClick) onPointClick(point);
+    };
+
 
     return (
         <div className="chart-container">
-            {/* 차트 */}
-            <LineChart
-                width={width}
-                height={height}
-                data={data.map(item => ({ ...item, avg }))}
-                onClick={(e) => {
-                    if (onPointClick && e && e.activePayload) {
-                        onPointClick(e.activePayload[0].payload);
-                    }
-                }}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                    dataKey="id"
-                    ticks={ticks} // 계산된 Tick 배열 전달
-                    tickFormatter={(value) => value} // Ticks 값 그대로 표시
-                />
-                <YAxis
-                    domain={[yMin, yMax]}
-                    tickFormatter={value => formatNumber(value)}
-                />
-                <Tooltip />
-                <ReferenceLine y={avg + yRange} stroke="#FF5733" strokeDasharray="4 4" label="Avg +10%" />
-                <ReferenceLine y={avg - yRange} stroke="#3498DB" strokeDasharray="4 4" label="Avg -10%" />
-                <ReferenceLine y={avg} stroke="#2ECC71" strokeWidth={2} label="Avg" />
-                <Line
-                    type="linear"
-                    dataKey={field}
-                    stroke="#01DFD7"
-                    strokeWidth={3}
-                    dot={false}
-                />
-                <Scatter
-                    data={aboveRangePoints}
-                    fill="red"
-                    shape="circle"
-                    name="Above Range"
-                />
-                <Scatter
-                    data={belowRangePoints}
-                    fill="blue"
-                    shape="circle"
-                    name="Below Range"
-                />
-            </LineChart>
-
-            {/* 범위를 벗어난 데이터 버튼 */}
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <ResponsiveContainer width="100%" height={400}>
+                <LineChart
+                    data={data.map((item) => ({ ...item, avg }))}
+                    onClick={(e) => {
+                        if (onPointClick && e && e.activePayload) {
+                            onPointClick(e.activePayload[0].payload);
+                        }
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="id" ticks={ticks} tickFormatter={(value) => value} />
+                    <YAxis domain={[yMin, yMax]} tickFormatter={(value) => formatNumber(value)} />
+                    <Tooltip />
+                    <ReferenceLine y={avg + yRange} stroke="#FF5733" strokeDasharray="4 4" label="Avg +10%" />
+                    <ReferenceLine y={avg - yRange} stroke="#3498DB" strokeDasharray="4 4" label="Avg -10%" />
+                    <ReferenceLine y={avg} stroke="#2ECC71" strokeWidth={2} label="Avg" />
+                    <Line type="linear" dataKey={field} stroke="#01DFD7" strokeWidth={3} dot={false} />
+                    <Scatter data={aboveRangePoints} fill="red" shape="circle" name="Above Range" />
+                    <Scatter data={belowRangePoints} fill="blue" shape="circle" name="Below Range" />
+                    {verticalLines
+                        .filter((line) => line.visible)
+                        .map((line) => (
+                            <ReferenceLine
+                                key={`vertical-${line.id}`}
+                                x={line.id}
+                                stroke={line.color}
+                                strokeWidth={2}
+                                label={{
+                                    value: `ID: ${line.id}`,
+                                    position: 'bottom',
+                                    fill: line.color,
+                                    fontSize: 14,
+                                    fontWeight: 'bold',
+                                    dy: 20,
+                                }}
+                            />
+                        ))}
+                </LineChart>
+            </ResponsiveContainer>
+            <div className="chart-buttons">
                 <h4>상계 10% 초과 데이터</h4>
-                {aboveRangePoints.map(point => (
+                {aboveRangePoints.map((point) => (
                     <button
                         key={point.id}
-                        style={{
-                            margin: '5px',
-                            padding: '10px',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            backgroundColor: '#ffecec',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                            setSelectedPoint({ id: point.id, value: point.value });
-                            if (onPointClick) onPointClick({ id: point.id, value: point.value });
-                        }}
-
+                        className={`up-button ${
+                            verticalLines.some((line) => line.id === point.id && line.visible) ? 'active' : ''
+                        }`}
+                        onClick={() => handleButtonClick(point)}
                     >
                         ID: {point.id}
                     </button>
-
                 ))}
-
                 <h4>하계 10% 미만 데이터</h4>
-                {belowRangePoints.map(point => (
+                {belowRangePoints.map((point) => (
                     <button
                         key={point.id}
-                        style={{
-                            margin: '5px',
-                            padding: '10px',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            backgroundColor: '#ececff',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                            setSelectedPoint({ id: point.id, value: point.value });
-                            if (onPointClick) onPointClick({ id: point.id, value: point.value });
-                        }}
-
+                        className={`down-button ${
+                            verticalLines.some((line) => line.id === point.id && line.visible) ? 'active' : ''
+                        }`}
+                        onClick={() => handleButtonClick(point)}
                     >
                         ID: {point.id}
                     </button>
