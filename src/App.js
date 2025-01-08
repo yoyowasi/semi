@@ -49,7 +49,7 @@ const App = () => {
 
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:8080/api/data", {
+            const response = await fetch("http://daelim-semiconductor.duckdns.org:8080/api/data", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -135,7 +135,7 @@ const App = () => {
         }
 
         const client = new Client({
-            brokerURL: `ws://localhost:8080/websocket?token=${token}`,
+            brokerURL: `ws://daelim-semiconductor.duckdns.org:8080/websocket?token=${token}`,
             onConnect: () => {
                 console.log("WebSocket 연결 성공");
 

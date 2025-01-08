@@ -36,7 +36,7 @@ const Showchat = ({
     const fetchInitialData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/data/latest300DataDesc`, {
+            const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data/latest300DataDesc`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ const Showchat = ({
     const handleFetchData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8080/api/data/${startId}/${lastId}`, {
+            const response = await fetch(`http://daelim-semiconductor.duckdns.org:8080/api/data/${startId}/${lastId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

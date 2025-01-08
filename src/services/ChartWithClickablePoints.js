@@ -10,6 +10,40 @@ const formatNumber = (num) => {
     return num.toFixed(2);                                       // 소수점 둘째 자리
 };
 
+// 간격 계산 및 Tick 배열 생성 함수
+const calculateTicks = (startId, endId) => {
+    // 시작 값과 종료 값 정렬
+    if (startId > endId) [startId, endId] = [endId, startId];
+
+    // 시작 ID를 10의 배수로 정렬
+    startId = Math.ceil(startId / 10) * 10;
+
+    const range = endId - startId;
+    const maxTicks = 20; // 최대 20개의 Ticks만 표시
+    let step = Math.ceil(range / maxTicks);
+
+    // step 값을 무조건 10의 배수로 강제
+    step = Math.ceil(step / 10) * 10;
+
+    // Ticks 배열 생성
+    const ticks = [];
+    for (let i = startId; i <= endId; i += step) {
+        ticks.push(i);
+    }
+
+    return ticks;
+};
+
+
+const filterData = (data, maxPoints) => {
+    if (!data || data.length <= maxPoints) {
+        return data; // 데이터가 충분히 적으면 그대로 반환
+    }
+
+    const step = Math.ceil(data.length / maxPoints); // 샘플링 간격 계산
+    return data.filter((_, index) => index % step === 0); // 샘플링
+};
+
 // 메인 차트 컴포넌트
 const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick, width = 800, height = 400 }) => {
     const [avg, setAvg] = useState(0);
@@ -45,6 +79,14 @@ const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick,
     const yMin = Math.min(...data.map(item => item[field] || 0), avg - yRange * 2);
     const yMax = Math.max(...data.map(item => item[field] || 0), avg + yRange * 2);
 
+    // 필터링된 데이터 사용
+    const filteredData = filterData(data, 100);
+
+    const startId = filteredData[0]?.id || 0;
+    const endId = filteredData[filteredData.length - 1]?.id || 1000;
+    const ticks = calculateTicks(startId, endId);
+
+
     return (
         <div className="chart-container">
             {/* 차트 */}
@@ -61,7 +103,8 @@ const ChartWithClickablePoints = ({ data, field, onBaselineUpdate, onPointClick,
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                     dataKey="id"
-                    tickFormatter={value => formatNumber(value)}
+                    ticks={ticks} // 계산된 Tick 배열 전달
+                    tickFormatter={(value) => value} // Ticks 값 그대로 표시
                 />
                 <YAxis
                     domain={[yMin, yMax]}
